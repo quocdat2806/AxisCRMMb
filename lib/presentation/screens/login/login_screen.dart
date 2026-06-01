@@ -87,7 +87,7 @@ class _LoginCard extends StatelessWidget {
             const SizedBox(height: 14),
             AppTextField(
               label: 'Tên của bạn',
-              hintText: 'Bỏ trống nếu không cần',
+              hintText: 'Tên của bạn',
               onChanged: cubit.nameChanged,
             ),
             const SizedBox(height: 14),

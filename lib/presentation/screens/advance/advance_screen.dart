@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/advance/advance_cubit.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/page_title.dart';
 
 class AdvanceScreen extends StatelessWidget {
   const AdvanceScreen({super.key});
@@ -42,48 +43,52 @@ class _AdvanceView extends StatelessWidget {
             },
             child: const Icon(Icons.add),
           ),
-          body: ListView(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 88),
-            children: <Widget>[
-              const _PageTitle(title: 'Ứng tiền'),
-              const SizedBox(height: 16),
-              _MonthSwitcher(
-                month: state.advanceMonth,
-                onPrevious: cubit.previousAdvanceMonth,
-                onNext: cubit.nextAdvanceMonth,
-              ),
-              const SizedBox(height: 14),
-              _SectionCard(
-                child: Row(
-                  children: <Widget>[
-                    const Icon(Icons.account_balance_wallet_outlined),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Tổng ứng trong tháng',
-                        style: TextStyle(
-                          color: Color(0xFF667085),
-                          fontWeight: FontWeight.w700,
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(18),
+              children: <Widget>[
+                const PageTitle(title: 'Danh sách ứng tiền'),
+                const SizedBox(height: 16),
+                _MonthSwitcher(
+                  month: state.advanceMonth,
+                  onPrevious: cubit.previousAdvanceMonth,
+                  onNext: cubit.nextAdvanceMonth,
+                ),
+                const SizedBox(height: 14),
+                _SectionCard(
+                  child: Row(
+                    children: <Widget>[
+                      const Icon(Icons.account_balance_wallet_outlined),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Tổng ứng trong tháng',
+                          style: TextStyle(
+                            color: Color(0xFF667085),
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      '${_formatMoney(state.monthlyAdvanceTotal)} đ',
-                      style: const TextStyle(
-                        color: Color(0xFF17233C),
-                        fontSize: 17,
-                        fontWeight: FontWeight.w900,
+                      Text(
+                        '${_formatMoney(state.monthlyAdvanceTotal)} đ',
+                        style: const TextStyle(
+                          color: Color(0xFF17233C),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 14),
-              if (advances.isEmpty)
-                const _EmptyState(message: 'Chưa có khoản ứng nào trong tháng')
-              else
-                ...advances.map(_AdvanceItem.new),
-            ],
+                const SizedBox(height: 14),
+                if (advances.isEmpty)
+                  const _EmptyState(
+                    message: 'Chưa có khoản ứng nào trong tháng',
+                  )
+                else
+                  ...advances.map(_AdvanceItem.new),
+              ],
+            ),
           ),
         );
       },
@@ -330,24 +335,6 @@ class _SectionCard extends StatelessWidget {
         ],
       ),
       child: child,
-    );
-  }
-}
-
-class _PageTitle extends StatelessWidget {
-  const _PageTitle({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: const TextStyle(
-        color: Color(0xFF17233C),
-        fontSize: 24,
-        fontWeight: FontWeight.w900,
-      ),
     );
   }
 }

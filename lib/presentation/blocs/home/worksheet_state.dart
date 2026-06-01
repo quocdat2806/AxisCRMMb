@@ -1,4 +1,4 @@
-part of 'home_cubit.dart';
+part of 'worksheet_cubit.dart';
 
 enum AttendanceType { worked, absent, half, empty }
 
@@ -12,8 +12,8 @@ class AttendanceDay extends Equatable {
   List<Object> get props => <Object>[day, type];
 }
 
-class HomeState extends Equatable {
-  const HomeState({
+class WorksheetState extends Equatable {
+  const WorksheetState({
     required this.user,
     required this.homeMonth,
     required this.accumulatedAmount,
@@ -29,18 +29,19 @@ class HomeState extends Equatable {
   final bool isLoading;
   final String? error;
 
-  factory HomeState.initial({required User user}) {
+  factory WorksheetState.initial({required User user}) {
     final DateTime now = DateTime.now();
-    return HomeState(
+    return WorksheetState(
       user: user,
       homeMonth: DateTime(now.year, now.month),
       accumulatedAmount: 0,
       attendanceDays: const <DailySummary>[],
       isLoading: false,
+      error: null,
     );
   }
 
-  HomeState copyWith({
+  WorksheetState copyWith({
     User? user,
     DateTime? homeMonth,
     int? accumulatedAmount,
@@ -48,7 +49,7 @@ class HomeState extends Equatable {
     bool? isLoading,
     String? error,
   }) {
-    return HomeState(
+    return WorksheetState(
       user: user ?? this.user,
       homeMonth: homeMonth ?? this.homeMonth,
       accumulatedAmount: accumulatedAmount ?? this.accumulatedAmount,

@@ -4,18 +4,18 @@ import 'package:axis_crm/core/di/injection_container.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/entity/daily_summary.dart';
 import 'package:axis_crm/entity/user.dart';
+import 'package:axis_crm/presentation/widgets/page_title.dart';
+import '../../blocs/home/worksheet_cubit.dart';
 
-import '../../blocs/home/home_cubit.dart';
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({required this.user, super.key});
+class WorksheetScreen extends StatelessWidget {
+  const WorksheetScreen({required this.user, super.key});
 
   final User user;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeCubit>(
-      create: (_) => HomeCubit(user: user, apiClient: getIt<ApiClient>()),
+    return BlocProvider<WorksheetCubit>(
+      create: (_) => WorksheetCubit(user: user, apiClient: getIt<ApiClient>()),
       child: const _HomeView(),
     );
   }
@@ -26,46 +26,19 @@ class _HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeState>(
-      builder: (BuildContext context, HomeState state) {
+    return BlocBuilder<WorksheetCubit, WorksheetState>(
+      builder: (BuildContext context, WorksheetState state) {
         return SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+            padding: const EdgeInsets.all(18),
             children: <Widget>[
               Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          'Xin chào',
-                          style: TextStyle(
-                            color: Color(0xFF7A879B),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          state.user.name,
-                          style: const TextStyle(
-                            color: Color(0xFF17233C),
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton.filledTonal(
-                    onPressed: () {},
-                    icon: const Icon(Icons.notifications_none),
-                  ),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const PageTitle(title: 'Bảng công'),
+                  Icon(Icons.notifications, color: Colors.grey[600]),
                 ],
               ),
-              const SizedBox(height: 20),
-              _AccumulatedCard(amount: state.accumulatedAmount),
               const SizedBox(height: 20),
               _AttendanceCalendar(
                 month: state.homeMonth,
@@ -75,68 +48,6 @@ class _HomeView extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _AccumulatedCard extends StatelessWidget {
-  const _AccumulatedCard({required this.amount});
-
-  final int amount;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2457D6),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const <BoxShadow>[
-          BoxShadow(
-            color: Color(0x262457D6),
-            blurRadius: 18,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: <Widget>[
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.16),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.savings_outlined, color: Colors.white),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  'Số tiền đã tích luỹ trong năm nay',
-                  style: TextStyle(
-                    color: Color(0xFFDDE7FF),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '${_formatMoney(amount)} VND',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -164,7 +75,7 @@ class _AttendanceCalendar extends StatelessWidget {
           Row(
             children: <Widget>[
               IconButton(
-                onPressed: context.read<HomeCubit>().previousHomeMonth,
+                onPressed: context.read<WorksheetCubit>().previousHomeMonth,
                 icon: const Icon(Icons.chevron_left),
               ),
               Expanded(
@@ -179,7 +90,7 @@ class _AttendanceCalendar extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: context.read<HomeCubit>().nextHomeMonth,
+                onPressed: context.read<WorksheetCubit>().nextHomeMonth,
                 icon: const Icon(Icons.chevron_right),
               ),
             ],
@@ -329,7 +240,7 @@ List<AttendanceDay> _buildAttendanceDays(
   final Map<int, AttendanceType> attendanceByDay = <int, AttendanceType>{
     for (final DailySummary item in attendanceDays)
       if (item.date.year == month.year && item.date.month == month.month)
-        item.date.day: _typeFromShiftValue(item.shiftValue),
+        item.date.day: _typeFromShiftValue(item.shift, item.shiftValue),
   };
   final List<AttendanceDay> days = <AttendanceDay>[
     for (int i = 1; i < firstWeekday; i++)
@@ -344,23 +255,17 @@ List<AttendanceDay> _buildAttendanceDays(
   return days;
 }
 
-AttendanceType _typeFromShiftValue(int value) {
-  if (value >= 1) return AttendanceType.worked;
-  if (value > 0) return AttendanceType.half;
-  return AttendanceType.absent;
-}
-
-String _formatMoney(int value) {
-  final String raw = value.toString();
-  final StringBuffer buffer = StringBuffer();
-
-  for (int i = 0; i < raw.length; i++) {
-    final int reverseIndex = raw.length - i;
-    buffer.write(raw[i]);
-    if (reverseIndex > 1 && reverseIndex % 3 == 1) {
-      buffer.write('.');
-    }
+AttendanceType _typeFromShiftValue(String shift, int shiftValue) {
+  switch (shift) {
+    case 'full':
+      return AttendanceType.worked;
+    case 'half':
+      return AttendanceType.half;
+    case 'absent':
+      return AttendanceType.absent;
+    default:
+      if (shiftValue >= 1) return AttendanceType.worked;
+      if (shiftValue > 0) return AttendanceType.half;
+      return AttendanceType.absent;
   }
-
-  return buffer.toString();
 }

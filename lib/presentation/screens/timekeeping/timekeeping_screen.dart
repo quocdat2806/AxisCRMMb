@@ -5,8 +5,8 @@ import '../../blocs/leave/leave_cubit.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
 
-class LeaveScreen extends StatelessWidget {
-  const LeaveScreen({super.key});
+class TimekeepingScreen extends StatelessWidget {
+  const TimekeepingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +25,9 @@ class _LeaveView extends StatelessWidget {
     return BlocConsumer<LeaveCubit, LeaveState>(
       listener: (context, state) {
         if (state.leaveSubmitted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đã gửi yêu cầu nghỉ')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Đã gửi yêu cầu nghỉ')));
           context.read<LeaveCubit>().clearLeaveMessage();
         }
       },

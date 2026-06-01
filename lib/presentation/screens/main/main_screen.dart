@@ -4,8 +4,8 @@ import 'package:axis_crm/entity/user.dart';
 
 import '../../blocs/main/main_cubit.dart';
 import '../advance/advance_screen.dart';
-import '../home/home_screen.dart';
-import '../leave/leave_screen.dart';
+import '../home/worksheet_screen.dart';
+import '../timekeeping/timekeeping_screen.dart';
 import '../projects/projects_screen.dart';
 import '../workers/workers_screen.dart';
 
@@ -52,7 +52,7 @@ class _OwnerView extends StatelessWidget {
             children: const <Widget>[
               WorkersScreen(),
               AdvanceScreen(),
-              LeaveScreen(),
+              TimekeepingScreen(),
               ProjectsScreen(),
             ],
           ),
@@ -73,7 +73,7 @@ class _OwnerView extends StatelessWidget {
               NavigationDestination(
                 icon: Icon(Icons.event_busy_outlined),
                 selectedIcon: Icon(Icons.event_busy),
-                label: 'Nghỉ',
+                label: 'Chấm công',
               ),
               NavigationDestination(
                 icon: Icon(Icons.location_city_outlined),
@@ -101,9 +101,9 @@ class _UserView extends StatelessWidget {
           body: IndexedStack(
             index: state.currentTab,
             children: <Widget>[
-              HomeScreen(user: user),
+              WorksheetScreen(user: user),
               const AdvanceScreen(),
-              const LeaveScreen(),
+              const TimekeepingScreen(),
             ],
           ),
           bottomNavigationBar: NavigationBar(
@@ -113,7 +113,7 @@ class _UserView extends StatelessWidget {
               NavigationDestination(
                 icon: Icon(Icons.home_outlined),
                 selectedIcon: Icon(Icons.home),
-                label: 'Trang chủ',
+                label: 'Bảng công',
               ),
               NavigationDestination(
                 icon: Icon(Icons.payments_outlined),
@@ -123,7 +123,7 @@ class _UserView extends StatelessWidget {
               NavigationDestination(
                 icon: Icon(Icons.event_busy_outlined),
                 selectedIcon: Icon(Icons.event_busy),
-                label: 'Đăng ký nghỉ',
+                label: 'Chấm công',
               ),
             ],
           ),

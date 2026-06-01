@@ -4,12 +4,12 @@ import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/entity/daily_summary.dart';
 import 'package:axis_crm/entity/user.dart';
 
-part 'home_state.dart';
+part 'worksheet_state.dart';
 
-class HomeCubit extends Cubit<HomeState> {
-  HomeCubit({required User user, required ApiClient apiClient})
+class WorksheetCubit extends Cubit<WorksheetState> {
+  WorksheetCubit({required User user, required ApiClient apiClient})
     : _apiClient = apiClient,
-      super(HomeState.initial(user: user)) {
+      super(WorksheetState.initial(user: user)) {
     loadSummary();
   }
 
