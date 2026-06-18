@@ -77,183 +77,18 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<WorkerDetailResponse> getWorkerDetail(String id) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<WorkerDetailResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/users/${id}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late WorkerDetailResponse _value;
-    try {
-      _value = WorkerDetailResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<WorkerDetailResponse> updateWorker(
-    String id,
-    UpdateWorkerRequest request,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<WorkerDetailResponse>(
-      Options(method: 'PATCH', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/workers/${id}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late WorkerDetailResponse _value;
-    try {
-      _value = WorkerDetailResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<WorkerSummaryResponse> getWorkerSummary(
-    String id,
+  Future<AttendanceRecordListResponse> getCurrentWorkerAttendanceRecords(
     String month,
+    int pageSize,
   ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'month': month};
+    final queryParameters = <String, dynamic>{
+      r'month': month,
+      r'page_size': pageSize,
+    };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<WorkerSummaryResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/users/${id}/summary',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late WorkerSummaryResponse _value;
-    try {
-      _value = WorkerSummaryResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<WorkerDetailResponse> getCurrentWorker() async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<WorkerDetailResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/me',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late WorkerDetailResponse _value;
-    try {
-      _value = WorkerDetailResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<WorkerSummaryResponse> getCurrentWorkerSummary(String month) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'month': month};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<WorkerSummaryResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/me/summary',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late WorkerSummaryResponse _value;
-    try {
-      _value = WorkerSummaryResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<AdvancesListResponse> getCurrentWorkerAdvances(String month) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'month': month};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<AdvancesListResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/me/advances',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AdvancesListResponse _value;
-    try {
-      _value = AdvancesListResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<AttendanceListResponse> getCurrentWorkerAttendance(
-    String month,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'month': month};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<AttendanceListResponse>(
+    final _options = _setStreamType<AttendanceRecordListResponse>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -264,9 +99,9 @@ class _ApiClient implements ApiClient {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AttendanceListResponse _value;
+    late AttendanceRecordListResponse _value;
     try {
-      _value = AttendanceListResponse.fromJson(_result.data!);
+      _value = AttendanceRecordListResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -275,25 +110,28 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<LeavesListResponse> getCurrentWorkerLeaves(String month) async {
+  Future<CreateAttendanceResponse> createAttendance(
+    CreateAttendanceRequest request,
+  ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'month': month};
+    final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<LeavesListResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _options = _setStreamType<CreateAttendanceResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/me/leaves',
+            '/v1/me/attendance',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late LeavesListResponse _value;
+    late CreateAttendanceResponse _value;
     try {
-      _value = LeavesListResponse.fromJson(_result.data!);
+      _value = CreateAttendanceResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -302,9 +140,51 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<ProjectsListResponse> listProjects(String? status) async {
+  Future<AdminCreateAttendanceResponse> adminCreateAttendance(
+    Map<String, dynamic> request,
+  ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'status': status};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request);
+    final _options = _setStreamType<AdminCreateAttendanceResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/attendance',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late AdminCreateAttendanceResponse _value;
+    try {
+      _value = AdminCreateAttendanceResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<ProjectsListResponse> listProjects(
+    String? status,
+    int? page,
+    int? pageSize,
+    String? sort,
+    String? order,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'status': status,
+      r'page': page,
+      r'page_size': pageSize,
+      r'sort': sort,
+      r'order': order,
+    };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
@@ -360,201 +240,22 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<ProjectDetailResponse> getProjectDetail(String id) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<ProjectDetailResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/projects/${id}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ProjectDetailResponse _value;
-    try {
-      _value = ProjectDetailResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<ProjectDetailResponse> updateProject(
-    String id,
-    UpdateProjectRequest request,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<ProjectDetailResponse>(
-      Options(method: 'PATCH', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/projects/${id}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ProjectDetailResponse _value;
-    try {
-      _value = ProjectDetailResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<ProjectDetailResponse> setProjectLocation(
-    String id,
-    SetProjectLocationRequest request,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<ProjectDetailResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/projects/${id}/location',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ProjectDetailResponse _value;
-    try {
-      _value = ProjectDetailResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<EligibilityResponse> checkAttendanceEligibility(
-    String projectId,
-    double lat,
-    double lng,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'project_id': projectId,
-      r'lat': lat,
-      r'lng': lng,
-    };
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<EligibilityResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/attendance/eligibility',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late EligibilityResponse _value;
-    try {
-      _value = EligibilityResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<AttendanceResponse> checkIn(CheckInRequest request) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<AttendanceResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/attendance/check-in',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AttendanceResponse _value;
-    try {
-      _value = AttendanceResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<AttendanceResponse> checkOut(CheckOutRequest request) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<AttendanceResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/attendance/check-out',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AttendanceResponse _value;
-    try {
-      _value = AttendanceResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<AttendanceListResponse> listAttendance(
-    String? userId,
-    String? projectId,
-    String? month,
+  Future<AttendanceRecordListResponse> getAttendanceForUser(
+    String userId,
+    String month,
+    int page,
+    int pageSize,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'user_id': userId,
-      r'project_id': projectId,
       r'month': month,
+      r'page': page,
+      r'page_size': pageSize,
     };
-    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<AttendanceListResponse>(
+    final _options = _setStreamType<AttendanceRecordListResponse>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -565,9 +266,9 @@ class _ApiClient implements ApiClient {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AttendanceListResponse _value;
+    late AttendanceRecordListResponse _value;
     try {
-      _value = AttendanceListResponse.fromJson(_result.data!);
+      _value = AttendanceRecordListResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -576,29 +277,236 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<AttendanceResponse> updateAttendance(
-    String id,
-    UpdateAttendanceRequest request,
+  Future<CreateWorkerAdvanceResponse> createWorkerAdvance(
+    Map<String, dynamic> request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request);
+    final _options = _setStreamType<CreateWorkerAdvanceResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/me/worker-advances',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CreateWorkerAdvanceResponse _value;
+    try {
+      _value = CreateWorkerAdvanceResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<CreateProjectAdvanceResponse> createProjectAdvance(
+    CreateProjectAdvanceRequest request,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
-    final _options = _setStreamType<AttendanceResponse>(
+    final _options = _setStreamType<CreateProjectAdvanceResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/project-advances',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CreateProjectAdvanceResponse _value;
+    try {
+      _value = CreateProjectAdvanceResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<ProjectAdvancesListResponse> listProjectAdvances(
+    String? projectId,
+    String? userId,
+    String? month,
+    int? page,
+    int? pageSize,
+    String? sort,
+    String? order,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'project_id': projectId,
+      r'user_id': userId,
+      r'month': month,
+      r'page': page,
+      r'page_size': pageSize,
+      r'sort': sort,
+      r'order': order,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<ProjectAdvancesListResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/project-advances',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ProjectAdvancesListResponse _value;
+    try {
+      _value = ProjectAdvancesListResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<AdminCreateWorkerAdvanceResponse> adminCreateWorkerAdvance(
+    Map<String, dynamic> request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request);
+    final _options = _setStreamType<AdminCreateWorkerAdvanceResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/worker-advances',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late AdminCreateWorkerAdvanceResponse _value;
+    try {
+      _value = AdminCreateWorkerAdvanceResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<WorkerAdvancesListResponse> getWorkerAdvances(
+    String month,
+    int page,
+    int pageSize,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'month': month,
+      r'page': page,
+      r'page_size': pageSize,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<WorkerAdvancesListResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/me/worker-advances',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late WorkerAdvancesListResponse _value;
+    try {
+      _value = WorkerAdvancesListResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<WorkerAdvancesListResponse> listWorkerAdvancesForUser(
+    String userId,
+    String? month,
+    int page,
+    int pageSize,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'user_id': userId,
+      r'month': month,
+      r'page': page,
+      r'page_size': pageSize,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<WorkerAdvancesListResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/worker-advances',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late WorkerAdvancesListResponse _value;
+    try {
+      _value = WorkerAdvancesListResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<UserUpdateResponse> updateUser(
+    String id,
+    Map<String, dynamic> request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request);
+    final _options = _setStreamType<UserUpdateResponse>(
       Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/attendance/${id}',
+            '/v1/users/${id}',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AttendanceResponse _value;
+    late UserUpdateResponse _value;
     try {
-      _value = AttendanceResponse.fromJson(_result.data!);
+      _value = UserUpdateResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -607,45 +515,25 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<void> deleteAttendance(String id) async {
+  Future<ReconcileResponse> getReconcileAttendance(String month) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'month': month};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<void>(
-      Options(method: 'DELETE', headers: _headers, extra: _extra)
+    final _options = _setStreamType<ReconcileResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/attendance/${id}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    await _dio.fetch<void>(_options);
-  }
-
-  @override
-  Future<AdvanceResponse> createAdvance(CreateAdvanceRequest request) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _options = _setStreamType<AdvanceResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/advances',
+            '/v1/me/attendance/reconcile',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AdvanceResponse _value;
+    late ReconcileResponse _value;
     try {
-      _value = AdvanceResponse.fromJson(_result.data!);
+      _value = ReconcileResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -654,32 +542,58 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<AdvancesListResponse> listAdvances(
-    String? userId,
-    String? month,
+  Future<YearlySummaryResponse> getMyYearlySummary(String year) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'year': year};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<YearlySummaryResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/me/yearly-summary',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late YearlySummaryResponse _value;
+    try {
+      _value = YearlySummaryResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<YearlySummaryResponse> getUserYearlySummary(
+    String userId,
+    String year,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'user_id': userId,
-      r'month': month,
+      r'year': year,
     };
-    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<AdvancesListResponse>(
+    final _options = _setStreamType<YearlySummaryResponse>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/advances',
+            '/v1/yearly-summary',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AdvancesListResponse _value;
+    late YearlySummaryResponse _value;
     try {
-      _value = AdvancesListResponse.fromJson(_result.data!);
+      _value = YearlySummaryResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -688,100 +602,93 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<void> deleteAdvance(String id) async {
+  Future<YearlyMismatchesResponse> getMyYearlyMismatches(String year) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'year': year};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<void>(
-      Options(method: 'DELETE', headers: _headers, extra: _extra)
+    final _options = _setStreamType<YearlyMismatchesResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/advances/${id}',
+            '/v1/me/yearly-mismatches',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    await _dio.fetch<void>(_options);
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late YearlyMismatchesResponse _value;
+    try {
+      _value = YearlyMismatchesResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
   }
 
   @override
-  Future<LeaveResponse> createLeave(CreateLeaveRequest request) async {
+  Future<YearlyMismatchesResponse> getUserYearlyMismatches(
+    String userId,
+    String year,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'user_id': userId,
+      r'year': year,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<YearlyMismatchesResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/yearly-mismatches',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late YearlyMismatchesResponse _value;
+    try {
+      _value = YearlyMismatchesResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BulkAttendanceResponse> createBulkAttendance(
+    CreateBulkAttendanceRequest request,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
-    final _options = _setStreamType<LeaveResponse>(
+    final _options = _setStreamType<BulkAttendanceResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/v1/leaves',
+            '/v1/attendance/bulk',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late LeaveResponse _value;
+    late BulkAttendanceResponse _value;
     try {
-      _value = LeaveResponse.fromJson(_result.data!);
+      _value = BulkAttendanceResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
-  }
-
-  @override
-  Future<LeavesListResponse> listLeaves(String? userId, String? month) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'user_id': userId,
-      r'month': month,
-    };
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<LeavesListResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/leaves',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late LeavesListResponse _value;
-    try {
-      _value = LeavesListResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<void> deleteLeave(String id) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<void>(
-      Options(method: 'DELETE', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/v1/leaves/${id}',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    await _dio.fetch<void>(_options);
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

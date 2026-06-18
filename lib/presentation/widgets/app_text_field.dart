@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -13,6 +14,7 @@ class AppTextField extends StatelessWidget {
     this.readOnly = false,
     this.maxLines = 1,
     this.onTap,
+    this.inputFormatters,
     super.key,
   });
 
@@ -27,6 +29,7 @@ class AppTextField extends StatelessWidget {
   final bool readOnly;
   final int maxLines;
   final VoidCallback? onTap;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +53,7 @@ class AppTextField extends StatelessWidget {
           maxLines: maxLines,
           keyboardType: keyboardType,
           textInputAction: textInputAction ?? TextInputAction.next,
+          inputFormatters: inputFormatters,
           style: const TextStyle(
             color: Color(0xFF25324B),
             fontSize: 15,

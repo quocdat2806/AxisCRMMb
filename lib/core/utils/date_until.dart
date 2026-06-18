@@ -1,0 +1,152 @@
+import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
+
+class AppDateUtils {
+  AppDateUtils._();
+
+  static String formatDateKey(DateTime date) {
+    return DateFormat("dd/MM/yyyy").format(date);
+  }
+
+  static String formatTimeOfDay(TimeOfDay timeOfDay) {
+    return DateFormat(
+      'HH:mm',
+    ).format(DateTime(0, 0, 0, timeOfDay.hour, timeOfDay.minute));
+  }
+
+  static List<int> generateAllHoursOfDay() {
+    final List<int> hours = [];
+    for (int i = 0; i < 24; i++) {
+      hours.add(i);
+    }
+    return hours;
+  }
+
+  static List<String> generateTimeType() {
+    return ['AM', 'PM'];
+  }
+
+  static List<int> generateAllMinutesOfDay() {
+    final List<int> minutes = [];
+    for (int i = 0; i < 60; i++) {
+      minutes.add(i);
+    }
+    return minutes;
+  }
+
+  static DateTime parseDateKey(String dateKey) {
+    return DateFormat("dd/MM/yyyy").parse(dateKey);
+  }
+
+  static String formatDate(DateTime date) {
+    return DateFormat('d MMM yyyy', 'vi_VN').format(date);
+  }
+
+  static String formatDateMonthAndDay(DateTime date) {
+    return DateFormat('d MMM', 'vi_VN').format(date);
+  }
+
+  static String formatFullDate(DateTime date) {
+    return DateFormat('d MMM yyyy HH:mm:ss', 'vi_VN').format(date);
+  }
+
+  static String formatHeaderDate(DateTime date) {
+    const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    final weekdayName = weekdays[(date.weekday - 1) % 7];
+    return '$weekdayName, ${date.day} thg ${date.month}, ${date.year}';
+  }
+
+  static const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
+  static List<DateTime> generateRecentMonths({int initialMonthCount = 12}) {
+    final DateTime now = DateTime.now();
+    final List<DateTime> months = [];
+    for (int i = initialMonthCount - 1; i >= 0; i--) {
+      months.add(DateTime(now.year, now.month - i));
+    }
+    return months;
+  }
+
+  static List<int> generateRecentYears({int rangeBack = 5}) {
+    final DateTime now = DateTime.now();
+    final List<int> years = [];
+    for (int i = rangeBack; i >= 0; i--) {
+      years.add(now.year - i);
+    }
+    return years;
+  }
+
+  static List<DateTime> generateMoreMonths(
+    List<DateTime> currentMonths, {
+    int addCount = 12,
+  }) {
+    if (currentMonths.isEmpty) return currentMonths;
+    final List<DateTime> newMonths = [];
+    final DateTime oldestMonth = currentMonths.first;
+    for (int i = addCount; i >= 1; i--) {
+      newMonths.add(DateTime(oldestMonth.year, oldestMonth.month - i));
+    }
+    return [...newMonths, ...currentMonths];
+  }
+
+  static List<int> generateMoreYears(
+    List<int> currentYears, {
+    int rangeBack = 8,
+  }) {
+    if (currentYears.isEmpty) return currentYears;
+    final List<int> newYears = [];
+    final int oldestYear = currentYears.first;
+    for (int i = rangeBack; i >= 1; i--) {
+      newYears.add(oldestYear - i);
+    }
+    return [...newYears, ...currentYears];
+  }
+
+  static ({DateTime startUtc, DateTime endUtc}) monthRangeUtc(
+    int year,
+    int month,
+  ) {
+    final localStart = DateTime(year, month);
+    final localNext = (month == 12)
+        ? DateTime(year + 1)
+        : DateTime(year, month + 1);
+    return (startUtc: localStart.toUtc(), endUtc: localNext.toUtc());
+  }
+
+  static ({DateTime startUtc, DateTime endUtc}) yearRangeUtc(int year) {
+    final localStart = DateTime(year);
+    final localNext = DateTime(year + 1);
+    return (startUtc: localStart.toUtc(), endUtc: localNext.toUtc());
+  }
+
+  static bool isDateInCurrentMonth(DateTime date, DateTime currentDate) {
+    return date.year == currentDate.year && date.month == currentDate.month;
+  }
+
+  static bool isYearInCurrentYear(DateTime date, DateTime currentDate) {
+    return date.year == currentDate.year;
+  }
+
+  static bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  static List<DateTime?> generateCalendarDays(DateTime selectedDate) {
+    final firstDay = DateTime(selectedDate.year, selectedDate.month);
+    final lastDay = DateTime(selectedDate.year, selectedDate.month + 1, 0);
+
+    final List<DateTime?> days = [];
+
+    for (int i = 0; i < firstDay.weekday % 7; i++) {
+      days.add(null);
+    }
+
+    for (int day = 1; day <= lastDay.day; day++) {
+      days.add(DateTime(firstDay.year, firstDay.month, day));
+    }
+
+    return days;
+  }
+}

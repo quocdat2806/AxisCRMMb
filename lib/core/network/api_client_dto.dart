@@ -1,9 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:axis_crm/entity/entity.dart';
+import 'package:axis_crm/entity/user.dart';
+import 'package:axis_crm/entity/project.dart';
+import 'package:axis_crm/entity/attendance_record.dart';
 
 part 'api_client_dto.g.dart';
 
-// Request DTOs
 @JsonSerializable()
 class LoginRequest {
   final String phone;
@@ -17,82 +18,12 @@ class LoginRequest {
 }
 
 @JsonSerializable()
-class ActivateRequest {
-  final String phone;
-  @JsonKey(name: 'invite_code')
-  final String inviteCode;
-  final String pin;
-
-  ActivateRequest({
-    required this.phone,
-    required this.inviteCode,
-    required this.pin,
-  });
-
-  factory ActivateRequest.fromJson(Map<String, dynamic> json) =>
-      _$ActivateRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$ActivateRequestToJson(this);
-}
-
-@JsonSerializable()
-class CreateWorkerRequest {
-  final String name;
-  final String phone;
-  final String skill;
-  @JsonKey(name: 'default_daily_rate')
-  final int defaultDailyRate;
-  final String? note;
-
-  CreateWorkerRequest({
-    required this.name,
-    required this.phone,
-    required this.skill,
-    required this.defaultDailyRate,
-    this.note,
-  });
-
-  factory CreateWorkerRequest.fromJson(Map<String, dynamic> json) =>
-      _$CreateWorkerRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$CreateWorkerRequestToJson(this);
-}
-
-@JsonSerializable()
-class UpdateWorkerRequest {
-  final String? name;
-  final String? phone;
-  final String? skill;
-  @JsonKey(name: 'default_daily_rate')
-  final int? defaultDailyRate;
-  final String? note;
-  @JsonKey(name: 'is_active')
-  final bool? isActive;
-
-  UpdateWorkerRequest({
-    this.name,
-    this.phone,
-    this.skill,
-    this.defaultDailyRate,
-    this.note,
-    this.isActive,
-  });
-
-  factory UpdateWorkerRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateWorkerRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$UpdateWorkerRequestToJson(this);
-}
-
-@JsonSerializable()
 class CreateProjectRequest {
   final String name;
-  final String? location;
   @JsonKey(name: 'started_at')
-  final String startedAt;
+  final String? startedAt;
 
-  CreateProjectRequest({
-    required this.name,
-    this.location,
-    required this.startedAt,
-  });
+  CreateProjectRequest({required this.name, this.startedAt});
 
   factory CreateProjectRequest.fromJson(Map<String, dynamic> json) =>
       _$CreateProjectRequestFromJson(json);
@@ -100,165 +31,65 @@ class CreateProjectRequest {
 }
 
 @JsonSerializable()
-class UpdateProjectRequest {
-  final String? name;
-  final String? location;
-  final String? status;
-  @JsonKey(name: 'started_at')
-  final String? startedAt;
-  @JsonKey(name: 'ended_at')
-  final String? endedAt;
-
-  UpdateProjectRequest({
-    this.name,
-    this.location,
-    this.status,
-    this.startedAt,
-    this.endedAt,
+class CreateWorkerAdvanceResponse {
+  final bool success;
+  final String? message;
+  final Map<String, dynamic>? advance;
+  CreateWorkerAdvanceResponse({
+    required this.success,
+    this.message,
+    this.advance,
   });
-
-  factory UpdateProjectRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateProjectRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$UpdateProjectRequestToJson(this);
+  factory CreateWorkerAdvanceResponse.fromJson(Map<String, dynamic> json) =>
+      _$CreateWorkerAdvanceResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$CreateWorkerAdvanceResponseToJson(this);
 }
 
 @JsonSerializable()
-class SetProjectLocationRequest {
-  final double latitude;
-  final double longitude;
-  @JsonKey(name: 'attendance_radius_meters')
-  final int attendanceRadiusMeters;
-  @JsonKey(name: 'location_accuracy_meters')
-  final int locationAccuracyMeters;
-
-  SetProjectLocationRequest({
-    required this.latitude,
-    required this.longitude,
-    required this.attendanceRadiusMeters,
-    required this.locationAccuracyMeters,
-  });
-
-  factory SetProjectLocationRequest.fromJson(Map<String, dynamic> json) =>
-      _$SetProjectLocationRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$SetProjectLocationRequestToJson(this);
-}
-
-@JsonSerializable()
-class AssignWorkerRequest {
-  @JsonKey(name: 'worker_id')
-  final String workerId;
-  @JsonKey(name: 'daily_rate')
-  final int dailyRate;
-  @JsonKey(name: 'joined_at')
-  final String joinedAt;
-
-  AssignWorkerRequest({
-    required this.workerId,
-    required this.dailyRate,
-    required this.joinedAt,
-  });
-
-  factory AssignWorkerRequest.fromJson(Map<String, dynamic> json) =>
-      _$AssignWorkerRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$AssignWorkerRequestToJson(this);
-}
-
-@JsonSerializable()
-class CheckInRequest {
+class CreateProjectAdvanceRequest {
+  @JsonKey(name: 'user_id')
+  final String userId;
   @JsonKey(name: 'project_id')
   final String projectId;
-  final double latitude;
-  final double longitude;
-  final String? note;
-
-  CheckInRequest({
-    required this.projectId,
-    required this.latitude,
-    required this.longitude,
-    this.note,
-  });
-
-  factory CheckInRequest.fromJson(Map<String, dynamic> json) =>
-      _$CheckInRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$CheckInRequestToJson(this);
-}
-
-@JsonSerializable()
-class CheckOutRequest {
-  @JsonKey(name: 'project_id')
-  final String projectId;
-  final double latitude;
-  final double longitude;
-  final String? shift;
-  final String? note;
-
-  CheckOutRequest({
-    required this.projectId,
-    required this.latitude,
-    required this.longitude,
-    this.shift,
-    this.note,
-  });
-
-  factory CheckOutRequest.fromJson(Map<String, dynamic> json) =>
-      _$CheckOutRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$CheckOutRequestToJson(this);
-}
-
-@JsonSerializable()
-class UpdateAttendanceRequest {
-  final String? shift;
-  final String? note;
-
-  UpdateAttendanceRequest({this.shift, this.note});
-
-  factory UpdateAttendanceRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateAttendanceRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$UpdateAttendanceRequestToJson(this);
-}
-
-@JsonSerializable()
-class CreateAdvanceRequest {
-  @JsonKey(name: 'worker_id')
-  final String workerId;
-  @JsonKey(name: 'project_id')
-  final String projectId;
-  final int amount;
+  final double amount;
   final String date;
   final String? note;
 
-  CreateAdvanceRequest({
-    required this.workerId,
+  CreateProjectAdvanceRequest({
+    required this.userId,
     required this.projectId,
     required this.amount,
     required this.date,
     this.note,
   });
 
-  factory CreateAdvanceRequest.fromJson(Map<String, dynamic> json) =>
-      _$CreateAdvanceRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$CreateAdvanceRequestToJson(this);
+  factory CreateProjectAdvanceRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateProjectAdvanceRequestFromJson(json);
+  Map<String, dynamic> toJson() => _$CreateProjectAdvanceRequestToJson(this);
 }
 
 @JsonSerializable()
-class CreateLeaveRequest {
-  @JsonKey(name: 'worker_id')
-  final String workerId;
-  @JsonKey(name: 'project_id')
-  final String projectId;
+class CreateProjectAdvanceResponse {
+  final bool success;
+  final String? message;
+  final Map<String, dynamic>? advance;
+  CreateProjectAdvanceResponse({required this.success, this.message, this.advance});
+  factory CreateProjectAdvanceResponse.fromJson(Map<String, dynamic> json) =>
+      _$CreateProjectAdvanceResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$CreateProjectAdvanceResponseToJson(this);
+}
+
+@JsonSerializable()
+class CreateAttendanceRequest {
   final String date;
-  final String? reason;
+  final String shift;
+  final String? note;
 
-  CreateLeaveRequest({
-    required this.workerId,
-    required this.projectId,
-    required this.date,
-    this.reason,
-  });
+  CreateAttendanceRequest({required this.date, required this.shift, this.note});
 
-  factory CreateLeaveRequest.fromJson(Map<String, dynamic> json) =>
-      _$CreateLeaveRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$CreateLeaveRequestToJson(this);
+  factory CreateAttendanceRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateAttendanceRequestFromJson(json);
+  Map<String, dynamic> toJson() => _$CreateAttendanceRequestToJson(this);
 }
 
 // Response wrappers
@@ -285,27 +116,10 @@ class Pagination {
 }
 
 @JsonSerializable()
-class WorkerDetailResponse {
-  final Worker worker;
-  WorkerDetailResponse({required this.worker});
-  factory WorkerDetailResponse.fromJson(Map<String, dynamic> json) =>
-      _$WorkerDetailResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$WorkerDetailResponseToJson(this);
-}
-
-@JsonSerializable()
-class WorkerSummaryResponse {
-  final WorkerMonthlySummary summary;
-  WorkerSummaryResponse({required this.summary});
-  factory WorkerSummaryResponse.fromJson(Map<String, dynamic> json) =>
-      _$WorkerSummaryResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$WorkerSummaryResponseToJson(this);
-}
-
-@JsonSerializable()
 class ProjectsListResponse {
-  final List<Project> projects;
-  ProjectsListResponse({required this.projects});
+  final List<Project> data;
+  final Pagination pagination;
+  ProjectsListResponse({required this.data, required this.pagination});
   factory ProjectsListResponse.fromJson(Map<String, dynamic> json) =>
       _$ProjectsListResponseFromJson(json);
   Map<String, dynamic> toJson() => _$ProjectsListResponseToJson(this);
@@ -321,64 +135,401 @@ class ProjectDetailResponse {
 }
 
 @JsonSerializable()
-class EligibilityResponse {
-  final Eligibility eligibility;
-  EligibilityResponse({required this.eligibility});
-  factory EligibilityResponse.fromJson(Map<String, dynamic> json) =>
-      _$EligibilityResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$EligibilityResponseToJson(this);
+class AttendanceRecordListResponse {
+  final List<AttendanceRecord> data;
+  final Pagination pagination;
+  AttendanceRecordListResponse({required this.data, required this.pagination});
+  factory AttendanceRecordListResponse.fromJson(Map<String, dynamic> json) =>
+      _$AttendanceRecordListResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$AttendanceRecordListResponseToJson(this);
 }
 
 @JsonSerializable()
-class AttendanceResponse {
-  final Attendance attendance;
-  AttendanceResponse({required this.attendance});
-  factory AttendanceResponse.fromJson(Map<String, dynamic> json) =>
-      _$AttendanceResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$AttendanceResponseToJson(this);
+class AdminCreateAttendanceResponse {
+  final bool success;
+  final String? message;
+  final Map<String, dynamic>? attendance;
+  AdminCreateAttendanceResponse({
+    required this.success,
+    this.message,
+    this.attendance,
+  });
+  factory AdminCreateAttendanceResponse.fromJson(Map<String, dynamic> json) =>
+      _$AdminCreateAttendanceResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$AdminCreateAttendanceResponseToJson(this);
 }
 
 @JsonSerializable()
-class AttendanceListResponse {
-  final List<Attendance> attendance;
-  AttendanceListResponse({required this.attendance});
-  factory AttendanceListResponse.fromJson(Map<String, dynamic> json) =>
-      _$AttendanceListResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$AttendanceListResponseToJson(this);
+class CreateAttendanceResponse {
+  final bool success;
+  final String? message;
+  CreateAttendanceResponse({required this.success, this.message});
+  factory CreateAttendanceResponse.fromJson(Map<String, dynamic> json) =>
+      _$CreateAttendanceResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$CreateAttendanceResponseToJson(this);
 }
 
 @JsonSerializable()
-class AdvanceResponse {
-  final Advance advance;
-  AdvanceResponse({required this.advance});
-  factory AdvanceResponse.fromJson(Map<String, dynamic> json) =>
-      _$AdvanceResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$AdvanceResponseToJson(this);
+class WorkerAdvancesListResponse {
+  final List<WorkerAdvanceItem> data;
+  final Pagination pagination;
+  WorkerAdvancesListResponse({required this.data, required this.pagination});
+  factory WorkerAdvancesListResponse.fromJson(Map<String, dynamic> json) =>
+      _$WorkerAdvancesListResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$WorkerAdvancesListResponseToJson(this);
 }
 
 @JsonSerializable()
-class AdvancesListResponse {
-  final List<Advance> advances;
-  AdvancesListResponse({required this.advances});
-  factory AdvancesListResponse.fromJson(Map<String, dynamic> json) =>
-      _$AdvancesListResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$AdvancesListResponseToJson(this);
+class AdminCreateWorkerAdvanceResponse {
+  final bool success;
+  final String? message;
+  final Map<String, dynamic>? advance;
+  AdminCreateWorkerAdvanceResponse({
+    required this.success,
+    this.message,
+    this.advance,
+  });
+  factory AdminCreateWorkerAdvanceResponse.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AdminCreateWorkerAdvanceResponseFromJson(json);
+  Map<String, dynamic> toJson() =>
+      _$AdminCreateWorkerAdvanceResponseToJson(this);
 }
 
 @JsonSerializable()
-class LeaveResponse {
-  final Leave leave;
-  LeaveResponse({required this.leave});
-  factory LeaveResponse.fromJson(Map<String, dynamic> json) =>
-      _$LeaveResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$LeaveResponseToJson(this);
+class WorkerAdvanceItem {
+  final String id;
+  @JsonKey(name: 'user_id')
+  final String userId;
+  final String date;
+  final int? amount;
+  @JsonKey(name: 'worker_amount')
+  final int? workerAmount;
+  @JsonKey(name: 'contractor_amount')
+  final int? contractorAmount;
+  final String status;
+  @JsonKey(name: 'worker_note')
+  final String? workerNote;
+  @JsonKey(name: 'contractor_note')
+  final String? contractorNote;
+  @JsonKey(name: 'worker_submitted_at')
+  final String? workerSubmittedAt;
+  @JsonKey(name: 'contractor_submitted_at')
+  final String? contractorSubmittedAt;
+  @JsonKey(name: 'created_by')
+  final String? createdBy;
+  @JsonKey(name: 'created_at')
+  final String createdAt;
+  @JsonKey(name: 'updated_at')
+  final String updatedAt;
+
+  WorkerAdvanceItem({
+    required this.id,
+    required this.userId,
+    required this.date,
+    this.amount,
+    this.workerAmount,
+    this.contractorAmount,
+    required this.status,
+    this.workerNote,
+    this.contractorNote,
+    this.workerSubmittedAt,
+    this.contractorSubmittedAt,
+    this.createdBy,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory WorkerAdvanceItem.fromJson(Map<String, dynamic> json) =>
+      _$WorkerAdvanceItemFromJson(json);
+  Map<String, dynamic> toJson() => _$WorkerAdvanceItemToJson(this);
 }
 
 @JsonSerializable()
-class LeavesListResponse {
-  final List<Leave> leaves;
-  LeavesListResponse({required this.leaves});
-  factory LeavesListResponse.fromJson(Map<String, dynamic> json) =>
-      _$LeavesListResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$LeavesListResponseToJson(this);
+class UserUpdateResponse {
+  final bool success;
+  final String? message;
+  final User? user;
+
+  UserUpdateResponse({required this.success, this.message, this.user});
+
+  factory UserUpdateResponse.fromJson(Map<String, dynamic> json) =>
+      _$UserUpdateResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$UserUpdateResponseToJson(this);
 }
+
+@JsonSerializable()
+class ProjectAdvanceItem {
+  final String id;
+  @JsonKey(name: 'user_id')
+  final String userId;
+  @JsonKey(name: 'project_id')
+  final String projectId;
+  final double? amount;
+  @JsonKey(name: 'worker_amount')
+  final double? workerAmount;
+  @JsonKey(name: 'contractor_amount')
+  final double? contractorAmount;
+  final String? status;
+  final String date;
+  @JsonKey(name: 'worker_note')
+  final String? workerNote;
+  @JsonKey(name: 'contractor_note')
+  final String? contractorNote;
+  final String? note;
+  @JsonKey(name: 'worker_submitted_at')
+  final String? workerSubmittedAt;
+  @JsonKey(name: 'contractor_submitted_at')
+  final String? contractorSubmittedAt;
+  @JsonKey(name: 'created_by')
+  final String? createdBy;
+  @JsonKey(name: 'created_at')
+  final String createdAt;
+  @JsonKey(name: 'updated_at')
+  final String? updatedAt;
+  final User? user;
+
+  ProjectAdvanceItem({
+    required this.id,
+    required this.userId,
+    required this.projectId,
+    this.amount,
+    this.workerAmount,
+    this.contractorAmount,
+    this.status,
+    required this.date,
+    this.workerNote,
+    this.contractorNote,
+    this.note,
+    this.workerSubmittedAt,
+    this.contractorSubmittedAt,
+    this.createdBy,
+    required this.createdAt,
+    this.updatedAt,
+    this.user,
+  });
+
+  factory ProjectAdvanceItem.fromJson(Map<String, dynamic> json) =>
+      _$ProjectAdvanceItemFromJson(json);
+  Map<String, dynamic> toJson() => _$ProjectAdvanceItemToJson(this);
+}
+
+@JsonSerializable()
+class ProjectAdvancesListResponse {
+  final List<ProjectAdvanceItem> data;
+  final Pagination pagination;
+  ProjectAdvancesListResponse({required this.data, required this.pagination});
+  factory ProjectAdvancesListResponse.fromJson(Map<String, dynamic> json) =>
+      _$ProjectAdvancesListResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$ProjectAdvancesListResponseToJson(this);
+}
+
+@JsonSerializable()
+class ReconcileAttendanceItem {
+  final String date;
+  final String? shift;
+  final String? note;
+
+  ReconcileAttendanceItem({
+    required this.date,
+    this.shift,
+    this.note,
+  });
+
+  factory ReconcileAttendanceItem.fromJson(Map<String, dynamic> json) =>
+      _$ReconcileAttendanceItemFromJson(json);
+  Map<String, dynamic> toJson() => _$ReconcileAttendanceItemToJson(this);
+}
+
+@JsonSerializable()
+class ReconcileResponse {
+  final bool success;
+  @JsonKey(name: 'mismatch_dates')
+  final List<String> mismatchDates;
+  @JsonKey(name: 'worker_attendance')
+  final List<ReconcileAttendanceItem> workerAttendance;
+  @JsonKey(name: 'contractor_attendance')
+  final List<ReconcileAttendanceItem> contractorAttendance;
+
+  ReconcileResponse({
+    required this.success,
+    required this.mismatchDates,
+    required this.workerAttendance,
+    required this.contractorAttendance,
+  });
+
+  factory ReconcileResponse.fromJson(Map<String, dynamic> json) =>
+      _$ReconcileResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$ReconcileResponseToJson(this);
+}
+
+@JsonSerializable()
+class YearlySummarySide {
+  @JsonKey(name: 'total_full_days')
+  final int totalFullDays;
+  @JsonKey(name: 'total_half_days')
+  final int totalHalfDays;
+  @JsonKey(name: 'total_absent_days')
+  final int totalAbsentDays;
+  @JsonKey(name: 'total_work_days')
+  final double totalWorkDays;
+  @JsonKey(name: 'total_advance_amount')
+  final double totalAdvanceAmount;
+
+  YearlySummarySide({
+    required this.totalFullDays,
+    required this.totalHalfDays,
+    required this.totalAbsentDays,
+    required this.totalWorkDays,
+    required this.totalAdvanceAmount,
+  });
+
+  factory YearlySummarySide.fromJson(Map<String, dynamic> json) =>
+      _$YearlySummarySideFromJson(json);
+  Map<String, dynamic> toJson() => _$YearlySummarySideToJson(this);
+}
+
+@JsonSerializable()
+class YearlySummaryData {
+  final int year;
+  @JsonKey(name: 'user_id')
+  final String userId;
+  @JsonKey(name: 'worker_side')
+  final YearlySummarySide workerSide;
+  @JsonKey(name: 'contractor_side')
+  final YearlySummarySide contractorSide;
+
+  YearlySummaryData({
+    required this.year,
+    required this.userId,
+    required this.workerSide,
+    required this.contractorSide,
+  });
+
+  factory YearlySummaryData.fromJson(Map<String, dynamic> json) =>
+      _$YearlySummaryDataFromJson(json);
+  Map<String, dynamic> toJson() => _$YearlySummaryDataToJson(this);
+}
+
+@JsonSerializable()
+class YearlySummaryResponse {
+  final bool success;
+  final YearlySummaryData summary;
+
+  YearlySummaryResponse({
+    required this.success,
+    required this.summary,
+  });
+
+  factory YearlySummaryResponse.fromJson(Map<String, dynamic> json) =>
+      _$YearlySummaryResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$YearlySummaryResponseToJson(this);
+}
+
+@JsonSerializable()
+class AttendanceMismatchItem {
+  final String date;
+  @JsonKey(name: 'worker_shift')
+  final String? workerShift;
+  @JsonKey(name: 'contractor_shift')
+  final String? contractorShift;
+  @JsonKey(name: 'worker_note')
+  final String? workerNote;
+  @JsonKey(name: 'contractor_note')
+  final String? contractorNote;
+
+  AttendanceMismatchItem({
+    required this.date,
+    this.workerShift,
+    this.contractorShift,
+    this.workerNote,
+    this.contractorNote,
+  });
+
+  factory AttendanceMismatchItem.fromJson(Map<String, dynamic> json) =>
+      _$AttendanceMismatchItemFromJson(json);
+  Map<String, dynamic> toJson() => _$AttendanceMismatchItemToJson(this);
+}
+
+@JsonSerializable()
+class AdvanceMismatchItem {
+  final String date;
+  @JsonKey(name: 'worker_amount')
+  final double? workerAmount;
+  @JsonKey(name: 'contractor_amount')
+  final double? contractorAmount;
+  @JsonKey(name: 'worker_note')
+  final String? workerNote;
+  @JsonKey(name: 'contractor_note')
+  final String? contractorNote;
+
+  AdvanceMismatchItem({
+    required this.date,
+    this.workerAmount,
+    this.contractorAmount,
+    this.workerNote,
+    this.contractorNote,
+  });
+
+  factory AdvanceMismatchItem.fromJson(Map<String, dynamic> json) =>
+      _$AdvanceMismatchItemFromJson(json);
+  Map<String, dynamic> toJson() => _$AdvanceMismatchItemToJson(this);
+}
+
+@JsonSerializable()
+class YearlyMismatchesResponse {
+  final bool? success;
+  final int year;
+  @JsonKey(name: 'user_id')
+  final String userId;
+  @JsonKey(name: 'attendance_mismatches')
+  final List<AttendanceMismatchItem> attendanceMismatches;
+  @JsonKey(name: 'advance_mismatches')
+  final List<AdvanceMismatchItem> advanceMismatches;
+
+  YearlyMismatchesResponse({
+    this.success,
+    required this.year,
+    required this.userId,
+    required this.attendanceMismatches,
+    required this.advanceMismatches,
+  });
+
+  factory YearlyMismatchesResponse.fromJson(Map<String, dynamic> json) =>
+      _$YearlyMismatchesResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$YearlyMismatchesResponseToJson(this);
+}
+
+@JsonSerializable()
+class CreateBulkAttendanceRequest {
+  final String date;
+  final String shift;
+  @JsonKey(name: 'user_ids')
+  final List<String> userIds;
+
+  CreateBulkAttendanceRequest({
+    required this.date,
+    required this.shift,
+    required this.userIds,
+  });
+
+  factory CreateBulkAttendanceRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateBulkAttendanceRequestFromJson(json);
+  Map<String, dynamic> toJson() => _$CreateBulkAttendanceRequestToJson(this);
+}
+
+@JsonSerializable()
+class BulkAttendanceResponse {
+  final bool success;
+  final String? message;
+
+  BulkAttendanceResponse({
+    required this.success,
+    this.message,
+  });
+
+  factory BulkAttendanceResponse.fromJson(Map<String, dynamic> json) =>
+      _$BulkAttendanceResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$BulkAttendanceResponseToJson(this);
+}
+

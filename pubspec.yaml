@@ -48,12 +48,17 @@ dependencies:
 
   # Functional programming
   dartz: ^0.10.1
+  intl: ^0.20.2
 
   # Storage
   connectivity_plus: ^7.0.0
   flutter_secure_storage: ^10.0.0
+  shared_preferences: ^2.2.3
   retrofit: ^4.9.2
   go_router: ^17.0.0
+  flutter_local_notifications: ^19.4.2
+  permission_handler: ^12.0.1
+  flutter_launcher_icons: ^0.14.4
 
 
 dev_dependencies:

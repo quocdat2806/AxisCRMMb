@@ -1,10 +1,13 @@
+import 'package:axis_crm/entity/project.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:axis_crm/core/di/injection_container.dart';
 import 'package:axis_crm/entity/user.dart';
-import 'package:axis_crm/presentation/blocs/session/session_cubit.dart';
+import 'package:axis_crm/presentation/cubits/session/session_cubit.dart';
 import 'package:axis_crm/presentation/screens/login/login_screen.dart';
 import 'package:axis_crm/presentation/screens/main/main_screen.dart';
+import 'package:axis_crm/presentation/screens/projects/project_detail_screen.dart';
+import 'package:axis_crm/presentation/screens/projects/admin_advance_from_project_screen.dart';
 import './router_path.dart';
 
 class AppRouter {
@@ -13,7 +16,7 @@ class AppRouter {
 
   late final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: RouterPath.login,
+    initialLocation: _getInitialLocation(),
     errorBuilder: (_, GoRouterState state) =>
         const Scaffold(body: Center(child: Text('Page not found'))),
     routes: <RouteBase>[
@@ -36,6 +39,34 @@ class AppRouter {
           return MainScreen(user: user);
         },
       ),
+      GoRoute(
+        name: RouterPath.projectDetail,
+        path: '/project/:id',
+        builder: (_, GoRouterState state) {
+          final project = state.extra as Project;
+          return ProjectDetailScreen(project: project);
+        },
+      ),
+      GoRoute(
+        name: RouterPath.adminAdvanceFromProject,
+        path: '/project/:id/advance',
+        builder: (_, GoRouterState state) {
+          final String projectId = state.pathParameters['id']!;
+          final projectName = state.extra as String? ?? '';
+          return AdminAdvanceFromProjectScreen(
+            projectId: projectId,
+            projectName: projectName,
+          );
+        },
+      ),
     ],
   );
+
+  String _getInitialLocation() {
+    final SessionCubit sessionCubit = getIt<SessionCubit>();
+    if (sessionCubit.state.isLoggedIn) {
+      return RouterPath.main;
+    }
+    return RouterPath.login;
+  }
 }

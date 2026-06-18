@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:axis_crm/core/di/injection_container.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/core/network/api_client_dto.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 import 'package:axis_crm/entity/project.dart';
 
-import '../../blocs/projects/projects_cubit.dart';
+import '../../cubits/projects/projects_cubit.dart';
 import '../../widgets/app_button.dart';
+import '../../widgets/app_date_picker_dialog.dart';
 import '../../widgets/app_text_field.dart';
+import '../../widgets/section_card.dart';
+import '../../widgets/empty_state.dart';
+import '../../widgets/page_title.dart';
 
 class ProjectsScreen extends StatelessWidget {
   const ProjectsScreen({super.key});
@@ -15,7 +22,8 @@ class ProjectsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ProjectsCubit>(
-      create: (_) => ProjectsCubit(apiClient: getIt<ApiClient>())..loadProjects(),
+      create: (_) =>
+          ProjectsCubit(apiClient: getIt<ApiClient>())..loadProjects(),
       child: const _ProjectsView(),
     );
   }
@@ -32,22 +40,39 @@ class _ProjectsView extends StatelessWidget {
 
         return Scaffold(
           backgroundColor: const Color(0xFFF4F7FC),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => _showCreateDialog(context, cubit),
-            child: const Icon(Icons.add),
-          ),
-          body: ListView(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 88),
-            children: <Widget>[
-              const _PageTitle(title: 'Công trình'),
-              const SizedBox(height: 16),
-              if (state.isLoading)
-                const Center(child: CircularProgressIndicator())
-              else if (state.projects.isEmpty)
-                const _EmptyState(message: 'Chưa có công trình nào')
-              else
-                ...state.projects.map(_ProjectItem.new),
-            ],
+          body: SafeArea(
+            child: Column(
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.all(18),
+                  child: PageTitle(title: 'Công trình'),
+                ),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    children: <Widget>[
+                      if (state.isLoading)
+                        const Center(child: CircularProgressIndicator())
+                      else if (state.projects.isEmpty)
+                        const EmptyState(message: 'Chưa có công trình nào')
+                      else
+                        ...state.projects.map(_ProjectItem.new),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: AppButton(
+                      label: 'Tạo công trình',
+                      onPressed: () => _showCreateDialog(context, cubit),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -56,31 +81,45 @@ class _ProjectsView extends StatelessWidget {
 
   void _showCreateDialog(BuildContext context, ProjectsCubit cubit) {
     final TextEditingController nameController = TextEditingController();
-    final TextEditingController locationController = TextEditingController();
+    DateTime? selectedDate;
 
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: const Color(0xFFF4F7FC),
       builder: (BuildContext dialogContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(dialogContext).viewInsets.bottom,
-          ),
-          child: _CreateProjectSheet(
-            nameController: nameController,
-            locationController: locationController,
-            onCreate: () {
-              cubit.createProject(CreateProjectRequest(
-                name: nameController.text.trim(),
-                location: locationController.text.trim().isEmpty
-                    ? null
-                    : locationController.text.trim(),
-                startedAt: DateTime.now().toIso8601String().split('T')[0],
-              ));
-              Navigator.of(dialogContext).pop();
-            },
-          ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(dialogContext).viewInsets.bottom,
+              ),
+              child: _CreateProjectSheet(
+                nameController: nameController,
+                selectedDate: selectedDate,
+                onDateTap: () async {
+                  final date = await showDialog<DateTime>(
+                    context: dialogContext,
+                    builder: (_) => const AppDatePickerDialog(),
+                  );
+                  if (date != null) {
+                    setState(() => selectedDate = date);
+                  }
+                },
+                onCreate: () {
+                  cubit.createProject(
+                    CreateProjectRequest(
+                      name: nameController.text.trim(),
+                      startedAt: selectedDate != null
+                          ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                          : null,
+                    ),
+                  );
+                  Navigator.of(dialogContext).pop();
+                },
+              ),
+            );
+          },
         );
       },
     );
@@ -90,12 +129,14 @@ class _ProjectsView extends StatelessWidget {
 class _CreateProjectSheet extends StatelessWidget {
   const _CreateProjectSheet({
     required this.nameController,
-    required this.locationController,
+    required this.selectedDate,
+    required this.onDateTap,
     required this.onCreate,
   });
 
   final TextEditingController nameController;
-  final TextEditingController locationController;
+  final DateTime? selectedDate;
+  final VoidCallback onDateTap;
   final VoidCallback onCreate;
 
   @override
@@ -121,10 +162,48 @@ class _CreateProjectSheet extends StatelessWidget {
             controller: nameController,
           ),
           const SizedBox(height: 14),
-          AppTextField(
-            label: 'Địa điểm',
-            hintText: 'Nhập địa điểm (tuỳ chọn)',
-            controller: locationController,
+          const Text(
+            'Thời gian bắt đầu',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF344054),
+            ),
+          ),
+          const SizedBox(height: 6),
+          InkWell(
+            onTap: onDateTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFFCDCED1)),
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+              ),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      selectedDate != null
+                          ? AppDateUtils.formatDate(selectedDate!)
+                          : 'Chọn ngày (tuỳ chọn)',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: selectedDate != null
+                            ? const Color(0xFF17233C)
+                            : const Color(0xFF98A2B3),
+                      ),
+                    ),
+                  ),
+                  const Icon(
+                    Icons.calendar_today,
+                    size: 20,
+                    color: Color(0xFF667085),
+                  ),
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: 18),
           SizedBox(
@@ -150,7 +229,8 @@ class _ProjectItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: _SectionCard(
+      child: SectionCard(
+        onTap: () => context.push('/project/${project.id}', extra: project),
         child: Row(
           children: <Widget>[
             Container(
@@ -160,10 +240,7 @@ class _ProjectItem extends StatelessWidget {
                 color: const Color(0xFFEFF4FF),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
-                Icons.location_city,
-                color: Color(0xFF2457D6),
-              ),
+              child: const Icon(Icons.location_city, color: Color(0xFF2457D6)),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -180,7 +257,9 @@ class _ProjectItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    project.location ?? 'Chưa có địa điểm',
+                    project.startedAt != null
+                        ? 'Bắt đầu: ${AppDateUtils.formatDate(project.startedAt!)}'
+                        : 'Chưa có thời gian bắt đầu',
                     style: const TextStyle(
                       color: Color(0xFF667085),
                       fontSize: 13,
@@ -210,74 +289,6 @@ class _ProjectItem extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5EAF3)),
-        boxShadow: const <BoxShadow>[
-          BoxShadow(
-            color: Color(0x0F101828),
-            blurRadius: 12,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
-}
-
-class _PageTitle extends StatelessWidget {
-  const _PageTitle({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: const TextStyle(
-        color: Color(0xFF17233C),
-        fontSize: 24,
-        fontWeight: FontWeight.w900,
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return _SectionCard(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24),
-        child: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Color(0xFF98A2B3),
-            fontWeight: FontWeight.w700,
-          ),
         ),
       ),
     );

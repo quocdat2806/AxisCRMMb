@@ -12,209 +12,84 @@ LoginRequest _$LoginRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$LoginRequestToJson(LoginRequest instance) =>
     <String, dynamic>{'phone': instance.phone, 'name': instance.name};
 
-ActivateRequest _$ActivateRequestFromJson(Map<String, dynamic> json) =>
-    ActivateRequest(
-      phone: json['phone'] as String,
-      inviteCode: json['invite_code'] as String,
-      pin: json['pin'] as String,
-    );
-
-Map<String, dynamic> _$ActivateRequestToJson(ActivateRequest instance) =>
-    <String, dynamic>{
-      'phone': instance.phone,
-      'invite_code': instance.inviteCode,
-      'pin': instance.pin,
-    };
-
-CreateWorkerRequest _$CreateWorkerRequestFromJson(Map<String, dynamic> json) =>
-    CreateWorkerRequest(
-      name: json['name'] as String,
-      phone: json['phone'] as String,
-      skill: json['skill'] as String,
-      defaultDailyRate: (json['default_daily_rate'] as num).toInt(),
-      note: json['note'] as String?,
-    );
-
-Map<String, dynamic> _$CreateWorkerRequestToJson(
-  CreateWorkerRequest instance,
-) => <String, dynamic>{
-  'name': instance.name,
-  'phone': instance.phone,
-  'skill': instance.skill,
-  'default_daily_rate': instance.defaultDailyRate,
-  'note': instance.note,
-};
-
-UpdateWorkerRequest _$UpdateWorkerRequestFromJson(Map<String, dynamic> json) =>
-    UpdateWorkerRequest(
-      name: json['name'] as String?,
-      phone: json['phone'] as String?,
-      skill: json['skill'] as String?,
-      defaultDailyRate: (json['default_daily_rate'] as num?)?.toInt(),
-      note: json['note'] as String?,
-      isActive: json['is_active'] as bool?,
-    );
-
-Map<String, dynamic> _$UpdateWorkerRequestToJson(
-  UpdateWorkerRequest instance,
-) => <String, dynamic>{
-  'name': instance.name,
-  'phone': instance.phone,
-  'skill': instance.skill,
-  'default_daily_rate': instance.defaultDailyRate,
-  'note': instance.note,
-  'is_active': instance.isActive,
-};
-
 CreateProjectRequest _$CreateProjectRequestFromJson(
   Map<String, dynamic> json,
 ) => CreateProjectRequest(
   name: json['name'] as String,
-  location: json['location'] as String?,
-  startedAt: json['started_at'] as String,
+  startedAt: json['started_at'] as String?,
 );
 
 Map<String, dynamic> _$CreateProjectRequestToJson(
   CreateProjectRequest instance,
-) => <String, dynamic>{
-  'name': instance.name,
-  'location': instance.location,
-  'started_at': instance.startedAt,
-};
+) => <String, dynamic>{'name': instance.name, 'started_at': instance.startedAt};
 
-UpdateProjectRequest _$UpdateProjectRequestFromJson(
+CreateWorkerAdvanceResponse _$CreateWorkerAdvanceResponseFromJson(
   Map<String, dynamic> json,
-) => UpdateProjectRequest(
-  name: json['name'] as String?,
-  location: json['location'] as String?,
-  status: json['status'] as String?,
-  startedAt: json['started_at'] as String?,
-  endedAt: json['ended_at'] as String?,
+) => CreateWorkerAdvanceResponse(
+  success: json['success'] as bool,
+  message: json['message'] as String?,
+  advance: json['advance'] as Map<String, dynamic>?,
 );
 
-Map<String, dynamic> _$UpdateProjectRequestToJson(
-  UpdateProjectRequest instance,
+Map<String, dynamic> _$CreateWorkerAdvanceResponseToJson(
+  CreateWorkerAdvanceResponse instance,
 ) => <String, dynamic>{
-  'name': instance.name,
-  'location': instance.location,
-  'status': instance.status,
-  'started_at': instance.startedAt,
-  'ended_at': instance.endedAt,
+  'success': instance.success,
+  'message': instance.message,
+  'advance': instance.advance,
 };
 
-SetProjectLocationRequest _$SetProjectLocationRequestFromJson(
+CreateProjectAdvanceRequest _$CreateProjectAdvanceRequestFromJson(
   Map<String, dynamic> json,
-) => SetProjectLocationRequest(
-  latitude: (json['latitude'] as num).toDouble(),
-  longitude: (json['longitude'] as num).toDouble(),
-  attendanceRadiusMeters: (json['attendance_radius_meters'] as num).toInt(),
-  locationAccuracyMeters: (json['location_accuracy_meters'] as num).toInt(),
-);
-
-Map<String, dynamic> _$SetProjectLocationRequestToJson(
-  SetProjectLocationRequest instance,
-) => <String, dynamic>{
-  'latitude': instance.latitude,
-  'longitude': instance.longitude,
-  'attendance_radius_meters': instance.attendanceRadiusMeters,
-  'location_accuracy_meters': instance.locationAccuracyMeters,
-};
-
-AssignWorkerRequest _$AssignWorkerRequestFromJson(Map<String, dynamic> json) =>
-    AssignWorkerRequest(
-      workerId: json['worker_id'] as String,
-      dailyRate: (json['daily_rate'] as num).toInt(),
-      joinedAt: json['joined_at'] as String,
-    );
-
-Map<String, dynamic> _$AssignWorkerRequestToJson(
-  AssignWorkerRequest instance,
-) => <String, dynamic>{
-  'worker_id': instance.workerId,
-  'daily_rate': instance.dailyRate,
-  'joined_at': instance.joinedAt,
-};
-
-CheckInRequest _$CheckInRequestFromJson(Map<String, dynamic> json) =>
-    CheckInRequest(
-      projectId: json['project_id'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-      note: json['note'] as String?,
-    );
-
-Map<String, dynamic> _$CheckInRequestToJson(CheckInRequest instance) =>
-    <String, dynamic>{
-      'project_id': instance.projectId,
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
-      'note': instance.note,
-    };
-
-CheckOutRequest _$CheckOutRequestFromJson(Map<String, dynamic> json) =>
-    CheckOutRequest(
-      projectId: json['project_id'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-      shift: json['shift'] as String?,
-      note: json['note'] as String?,
-    );
-
-Map<String, dynamic> _$CheckOutRequestToJson(CheckOutRequest instance) =>
-    <String, dynamic>{
-      'project_id': instance.projectId,
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
-      'shift': instance.shift,
-      'note': instance.note,
-    };
-
-UpdateAttendanceRequest _$UpdateAttendanceRequestFromJson(
-  Map<String, dynamic> json,
-) => UpdateAttendanceRequest(
-  shift: json['shift'] as String?,
-  note: json['note'] as String?,
-);
-
-Map<String, dynamic> _$UpdateAttendanceRequestToJson(
-  UpdateAttendanceRequest instance,
-) => <String, dynamic>{'shift': instance.shift, 'note': instance.note};
-
-CreateAdvanceRequest _$CreateAdvanceRequestFromJson(
-  Map<String, dynamic> json,
-) => CreateAdvanceRequest(
-  workerId: json['worker_id'] as String,
+) => CreateProjectAdvanceRequest(
+  userId: json['user_id'] as String,
   projectId: json['project_id'] as String,
-  amount: (json['amount'] as num).toInt(),
+  amount: (json['amount'] as num).toDouble(),
   date: json['date'] as String,
   note: json['note'] as String?,
 );
 
-Map<String, dynamic> _$CreateAdvanceRequestToJson(
-  CreateAdvanceRequest instance,
+Map<String, dynamic> _$CreateProjectAdvanceRequestToJson(
+  CreateProjectAdvanceRequest instance,
 ) => <String, dynamic>{
-  'worker_id': instance.workerId,
+  'user_id': instance.userId,
   'project_id': instance.projectId,
   'amount': instance.amount,
   'date': instance.date,
   'note': instance.note,
 };
 
-CreateLeaveRequest _$CreateLeaveRequestFromJson(Map<String, dynamic> json) =>
-    CreateLeaveRequest(
-      workerId: json['worker_id'] as String,
-      projectId: json['project_id'] as String,
-      date: json['date'] as String,
-      reason: json['reason'] as String?,
-    );
+CreateProjectAdvanceResponse _$CreateProjectAdvanceResponseFromJson(
+  Map<String, dynamic> json,
+) => CreateProjectAdvanceResponse(
+  success: json['success'] as bool,
+  message: json['message'] as String?,
+  advance: json['advance'] as Map<String, dynamic>?,
+);
 
-Map<String, dynamic> _$CreateLeaveRequestToJson(CreateLeaveRequest instance) =>
-    <String, dynamic>{
-      'worker_id': instance.workerId,
-      'project_id': instance.projectId,
-      'date': instance.date,
-      'reason': instance.reason,
-    };
+Map<String, dynamic> _$CreateProjectAdvanceResponseToJson(
+  CreateProjectAdvanceResponse instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'message': instance.message,
+  'advance': instance.advance,
+};
+
+CreateAttendanceRequest _$CreateAttendanceRequestFromJson(
+  Map<String, dynamic> json,
+) => CreateAttendanceRequest(
+  date: json['date'] as String,
+  shift: json['shift'] as String,
+  note: json['note'] as String?,
+);
+
+Map<String, dynamic> _$CreateAttendanceRequestToJson(
+  CreateAttendanceRequest instance,
+) => <String, dynamic>{
+  'date': instance.date,
+  'shift': instance.shift,
+  'note': instance.note,
+};
 
 UsersListResponse _$UsersListResponseFromJson(Map<String, dynamic> json) =>
     UsersListResponse(
@@ -242,39 +117,21 @@ Map<String, dynamic> _$PaginationToJson(Pagination instance) =>
       'total': instance.total,
     };
 
-WorkerDetailResponse _$WorkerDetailResponseFromJson(
-  Map<String, dynamic> json,
-) => WorkerDetailResponse(
-  worker: Worker.fromJson(json['worker'] as Map<String, dynamic>),
-);
-
-Map<String, dynamic> _$WorkerDetailResponseToJson(
-  WorkerDetailResponse instance,
-) => <String, dynamic>{'worker': instance.worker};
-
-WorkerSummaryResponse _$WorkerSummaryResponseFromJson(
-  Map<String, dynamic> json,
-) => WorkerSummaryResponse(
-  summary: WorkerMonthlySummary.fromJson(
-    json['summary'] as Map<String, dynamic>,
-  ),
-);
-
-Map<String, dynamic> _$WorkerSummaryResponseToJson(
-  WorkerSummaryResponse instance,
-) => <String, dynamic>{'summary': instance.summary};
-
 ProjectsListResponse _$ProjectsListResponseFromJson(
   Map<String, dynamic> json,
 ) => ProjectsListResponse(
-  projects: (json['projects'] as List<dynamic>)
+  data: (json['data'] as List<dynamic>)
       .map((e) => Project.fromJson(e as Map<String, dynamic>))
       .toList(),
+  pagination: Pagination.fromJson(json['pagination'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$ProjectsListResponseToJson(
   ProjectsListResponse instance,
-) => <String, dynamic>{'projects': instance.projects};
+) => <String, dynamic>{
+  'data': instance.data,
+  'pagination': instance.pagination,
+};
 
 ProjectDetailResponse _$ProjectDetailResponseFromJson(
   Map<String, dynamic> json,
@@ -286,71 +143,376 @@ Map<String, dynamic> _$ProjectDetailResponseToJson(
   ProjectDetailResponse instance,
 ) => <String, dynamic>{'project': instance.project};
 
-EligibilityResponse _$EligibilityResponseFromJson(Map<String, dynamic> json) =>
-    EligibilityResponse(
-      eligibility: Eligibility.fromJson(
-        json['eligibility'] as Map<String, dynamic>,
-      ),
-    );
-
-Map<String, dynamic> _$EligibilityResponseToJson(
-  EligibilityResponse instance,
-) => <String, dynamic>{'eligibility': instance.eligibility};
-
-AttendanceResponse _$AttendanceResponseFromJson(Map<String, dynamic> json) =>
-    AttendanceResponse(
-      attendance: Attendance.fromJson(
-        json['attendance'] as Map<String, dynamic>,
-      ),
-    );
-
-Map<String, dynamic> _$AttendanceResponseToJson(AttendanceResponse instance) =>
-    <String, dynamic>{'attendance': instance.attendance};
-
-AttendanceListResponse _$AttendanceListResponseFromJson(
+AttendanceRecordListResponse _$AttendanceRecordListResponseFromJson(
   Map<String, dynamic> json,
-) => AttendanceListResponse(
-  attendance: (json['attendance'] as List<dynamic>)
-      .map((e) => Attendance.fromJson(e as Map<String, dynamic>))
+) => AttendanceRecordListResponse(
+  data: (json['data'] as List<dynamic>)
+      .map((e) => AttendanceRecord.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  pagination: Pagination.fromJson(json['pagination'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$AttendanceRecordListResponseToJson(
+  AttendanceRecordListResponse instance,
+) => <String, dynamic>{
+  'data': instance.data,
+  'pagination': instance.pagination,
+};
+
+AdminCreateAttendanceResponse _$AdminCreateAttendanceResponseFromJson(
+  Map<String, dynamic> json,
+) => AdminCreateAttendanceResponse(
+  success: json['success'] as bool,
+  message: json['message'] as String?,
+  attendance: json['attendance'] as Map<String, dynamic>?,
+);
+
+Map<String, dynamic> _$AdminCreateAttendanceResponseToJson(
+  AdminCreateAttendanceResponse instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'message': instance.message,
+  'attendance': instance.attendance,
+};
+
+CreateAttendanceResponse _$CreateAttendanceResponseFromJson(
+  Map<String, dynamic> json,
+) => CreateAttendanceResponse(
+  success: json['success'] as bool,
+  message: json['message'] as String?,
+);
+
+Map<String, dynamic> _$CreateAttendanceResponseToJson(
+  CreateAttendanceResponse instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'message': instance.message,
+};
+
+WorkerAdvancesListResponse _$WorkerAdvancesListResponseFromJson(
+  Map<String, dynamic> json,
+) => WorkerAdvancesListResponse(
+  data: (json['data'] as List<dynamic>)
+      .map((e) => WorkerAdvanceItem.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  pagination: Pagination.fromJson(json['pagination'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$WorkerAdvancesListResponseToJson(
+  WorkerAdvancesListResponse instance,
+) => <String, dynamic>{
+  'data': instance.data,
+  'pagination': instance.pagination,
+};
+
+AdminCreateWorkerAdvanceResponse _$AdminCreateWorkerAdvanceResponseFromJson(
+  Map<String, dynamic> json,
+) => AdminCreateWorkerAdvanceResponse(
+  success: json['success'] as bool,
+  message: json['message'] as String?,
+  advance: json['advance'] as Map<String, dynamic>?,
+);
+
+Map<String, dynamic> _$AdminCreateWorkerAdvanceResponseToJson(
+  AdminCreateWorkerAdvanceResponse instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'message': instance.message,
+  'advance': instance.advance,
+};
+
+WorkerAdvanceItem _$WorkerAdvanceItemFromJson(Map<String, dynamic> json) =>
+    WorkerAdvanceItem(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      date: json['date'] as String,
+      amount: (json['amount'] as num?)?.toInt(),
+      workerAmount: (json['worker_amount'] as num?)?.toInt(),
+      contractorAmount: (json['contractor_amount'] as num?)?.toInt(),
+      status: json['status'] as String,
+      workerNote: json['worker_note'] as String?,
+      contractorNote: json['contractor_note'] as String?,
+      workerSubmittedAt: json['worker_submitted_at'] as String?,
+      contractorSubmittedAt: json['contractor_submitted_at'] as String?,
+      createdBy: json['created_by'] as String?,
+      createdAt: json['created_at'] as String,
+      updatedAt: json['updated_at'] as String,
+    );
+
+Map<String, dynamic> _$WorkerAdvanceItemToJson(WorkerAdvanceItem instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'user_id': instance.userId,
+      'date': instance.date,
+      'amount': instance.amount,
+      'worker_amount': instance.workerAmount,
+      'contractor_amount': instance.contractorAmount,
+      'status': instance.status,
+      'worker_note': instance.workerNote,
+      'contractor_note': instance.contractorNote,
+      'worker_submitted_at': instance.workerSubmittedAt,
+      'contractor_submitted_at': instance.contractorSubmittedAt,
+      'created_by': instance.createdBy,
+      'created_at': instance.createdAt,
+      'updated_at': instance.updatedAt,
+    };
+
+UserUpdateResponse _$UserUpdateResponseFromJson(Map<String, dynamic> json) =>
+    UserUpdateResponse(
+      success: json['success'] as bool,
+      message: json['message'] as String?,
+      user: json['user'] == null
+          ? null
+          : User.fromJson(json['user'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$UserUpdateResponseToJson(UserUpdateResponse instance) =>
+    <String, dynamic>{
+      'success': instance.success,
+      'message': instance.message,
+      'user': instance.user,
+    };
+
+ProjectAdvanceItem _$ProjectAdvanceItemFromJson(Map<String, dynamic> json) =>
+    ProjectAdvanceItem(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      projectId: json['project_id'] as String,
+      amount: (json['amount'] as num?)?.toDouble(),
+      workerAmount: (json['worker_amount'] as num?)?.toDouble(),
+      contractorAmount: (json['contractor_amount'] as num?)?.toDouble(),
+      status: json['status'] as String?,
+      date: json['date'] as String,
+      workerNote: json['worker_note'] as String?,
+      contractorNote: json['contractor_note'] as String?,
+      note: json['note'] as String?,
+      workerSubmittedAt: json['worker_submitted_at'] as String?,
+      contractorSubmittedAt: json['contractor_submitted_at'] as String?,
+      createdBy: json['created_by'] as String?,
+      createdAt: json['created_at'] as String,
+      updatedAt: json['updated_at'] as String?,
+      user: json['user'] == null
+          ? null
+          : User.fromJson(json['user'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$ProjectAdvanceItemToJson(ProjectAdvanceItem instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'user_id': instance.userId,
+      'project_id': instance.projectId,
+      'amount': instance.amount,
+      'worker_amount': instance.workerAmount,
+      'contractor_amount': instance.contractorAmount,
+      'status': instance.status,
+      'date': instance.date,
+      'worker_note': instance.workerNote,
+      'contractor_note': instance.contractorNote,
+      'note': instance.note,
+      'worker_submitted_at': instance.workerSubmittedAt,
+      'contractor_submitted_at': instance.contractorSubmittedAt,
+      'created_by': instance.createdBy,
+      'created_at': instance.createdAt,
+      'updated_at': instance.updatedAt,
+      'user': instance.user,
+    };
+
+ProjectAdvancesListResponse _$ProjectAdvancesListResponseFromJson(
+  Map<String, dynamic> json,
+) => ProjectAdvancesListResponse(
+  data: (json['data'] as List<dynamic>)
+      .map((e) => ProjectAdvanceItem.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  pagination: Pagination.fromJson(json['pagination'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$ProjectAdvancesListResponseToJson(
+  ProjectAdvancesListResponse instance,
+) => <String, dynamic>{
+  'data': instance.data,
+  'pagination': instance.pagination,
+};
+
+ReconcileAttendanceItem _$ReconcileAttendanceItemFromJson(
+  Map<String, dynamic> json,
+) => ReconcileAttendanceItem(
+  date: json['date'] as String,
+  shift: json['shift'] as String?,
+  note: json['note'] as String?,
+);
+
+Map<String, dynamic> _$ReconcileAttendanceItemToJson(
+  ReconcileAttendanceItem instance,
+) => <String, dynamic>{
+  'date': instance.date,
+  'shift': instance.shift,
+  'note': instance.note,
+};
+
+ReconcileResponse _$ReconcileResponseFromJson(
+  Map<String, dynamic> json,
+) => ReconcileResponse(
+  success: json['success'] as bool,
+  mismatchDates: (json['mismatch_dates'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  workerAttendance: (json['worker_attendance'] as List<dynamic>)
+      .map((e) => ReconcileAttendanceItem.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  contractorAttendance: (json['contractor_attendance'] as List<dynamic>)
+      .map((e) => ReconcileAttendanceItem.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
-Map<String, dynamic> _$AttendanceListResponseToJson(
-  AttendanceListResponse instance,
-) => <String, dynamic>{'attendance': instance.attendance};
+Map<String, dynamic> _$ReconcileResponseToJson(ReconcileResponse instance) =>
+    <String, dynamic>{
+      'success': instance.success,
+      'mismatch_dates': instance.mismatchDates,
+      'worker_attendance': instance.workerAttendance,
+      'contractor_attendance': instance.contractorAttendance,
+    };
 
-AdvanceResponse _$AdvanceResponseFromJson(Map<String, dynamic> json) =>
-    AdvanceResponse(
-      advance: Advance.fromJson(json['advance'] as Map<String, dynamic>),
+YearlySummarySide _$YearlySummarySideFromJson(Map<String, dynamic> json) =>
+    YearlySummarySide(
+      totalFullDays: (json['total_full_days'] as num).toInt(),
+      totalHalfDays: (json['total_half_days'] as num).toInt(),
+      totalAbsentDays: (json['total_absent_days'] as num).toInt(),
+      totalWorkDays: (json['total_work_days'] as num).toDouble(),
+      totalAdvanceAmount: (json['total_advance_amount'] as num).toDouble(),
     );
 
-Map<String, dynamic> _$AdvanceResponseToJson(AdvanceResponse instance) =>
-    <String, dynamic>{'advance': instance.advance};
+Map<String, dynamic> _$YearlySummarySideToJson(YearlySummarySide instance) =>
+    <String, dynamic>{
+      'total_full_days': instance.totalFullDays,
+      'total_half_days': instance.totalHalfDays,
+      'total_absent_days': instance.totalAbsentDays,
+      'total_work_days': instance.totalWorkDays,
+      'total_advance_amount': instance.totalAdvanceAmount,
+    };
 
-AdvancesListResponse _$AdvancesListResponseFromJson(
+YearlySummaryData _$YearlySummaryDataFromJson(Map<String, dynamic> json) =>
+    YearlySummaryData(
+      year: (json['year'] as num).toInt(),
+      userId: json['user_id'] as String,
+      workerSide: YearlySummarySide.fromJson(
+        json['worker_side'] as Map<String, dynamic>,
+      ),
+      contractorSide: YearlySummarySide.fromJson(
+        json['contractor_side'] as Map<String, dynamic>,
+      ),
+    );
+
+Map<String, dynamic> _$YearlySummaryDataToJson(YearlySummaryData instance) =>
+    <String, dynamic>{
+      'year': instance.year,
+      'user_id': instance.userId,
+      'worker_side': instance.workerSide,
+      'contractor_side': instance.contractorSide,
+    };
+
+YearlySummaryResponse _$YearlySummaryResponseFromJson(
   Map<String, dynamic> json,
-) => AdvancesListResponse(
-  advances: (json['advances'] as List<dynamic>)
-      .map((e) => Advance.fromJson(e as Map<String, dynamic>))
+) => YearlySummaryResponse(
+  success: json['success'] as bool,
+  summary: YearlySummaryData.fromJson(json['summary'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$YearlySummaryResponseToJson(
+  YearlySummaryResponse instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'summary': instance.summary,
+};
+
+AttendanceMismatchItem _$AttendanceMismatchItemFromJson(
+  Map<String, dynamic> json,
+) => AttendanceMismatchItem(
+  date: json['date'] as String,
+  workerShift: json['worker_shift'] as String?,
+  contractorShift: json['contractor_shift'] as String?,
+  workerNote: json['worker_note'] as String?,
+  contractorNote: json['contractor_note'] as String?,
+);
+
+Map<String, dynamic> _$AttendanceMismatchItemToJson(
+  AttendanceMismatchItem instance,
+) => <String, dynamic>{
+  'date': instance.date,
+  'worker_shift': instance.workerShift,
+  'contractor_shift': instance.contractorShift,
+  'worker_note': instance.workerNote,
+  'contractor_note': instance.contractorNote,
+};
+
+AdvanceMismatchItem _$AdvanceMismatchItemFromJson(Map<String, dynamic> json) =>
+    AdvanceMismatchItem(
+      date: json['date'] as String,
+      workerAmount: (json['worker_amount'] as num?)?.toDouble(),
+      contractorAmount: (json['contractor_amount'] as num?)?.toDouble(),
+      workerNote: json['worker_note'] as String?,
+      contractorNote: json['contractor_note'] as String?,
+    );
+
+Map<String, dynamic> _$AdvanceMismatchItemToJson(
+  AdvanceMismatchItem instance,
+) => <String, dynamic>{
+  'date': instance.date,
+  'worker_amount': instance.workerAmount,
+  'contractor_amount': instance.contractorAmount,
+  'worker_note': instance.workerNote,
+  'contractor_note': instance.contractorNote,
+};
+
+YearlyMismatchesResponse _$YearlyMismatchesResponseFromJson(
+  Map<String, dynamic> json,
+) => YearlyMismatchesResponse(
+  success: json['success'] as bool?,
+  year: (json['year'] as num).toInt(),
+  userId: json['user_id'] as String,
+  attendanceMismatches: (json['attendance_mismatches'] as List<dynamic>)
+      .map((e) => AttendanceMismatchItem.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  advanceMismatches: (json['advance_mismatches'] as List<dynamic>)
+      .map((e) => AdvanceMismatchItem.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
-Map<String, dynamic> _$AdvancesListResponseToJson(
-  AdvancesListResponse instance,
-) => <String, dynamic>{'advances': instance.advances};
+Map<String, dynamic> _$YearlyMismatchesResponseToJson(
+  YearlyMismatchesResponse instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'year': instance.year,
+  'user_id': instance.userId,
+  'attendance_mismatches': instance.attendanceMismatches,
+  'advance_mismatches': instance.advanceMismatches,
+};
 
-LeaveResponse _$LeaveResponseFromJson(Map<String, dynamic> json) =>
-    LeaveResponse(leave: Leave.fromJson(json['leave'] as Map<String, dynamic>));
+CreateBulkAttendanceRequest _$CreateBulkAttendanceRequestFromJson(
+  Map<String, dynamic> json,
+) => CreateBulkAttendanceRequest(
+  date: json['date'] as String,
+  shift: json['shift'] as String,
+  userIds: (json['user_ids'] as List<dynamic>).map((e) => e as String).toList(),
+);
 
-Map<String, dynamic> _$LeaveResponseToJson(LeaveResponse instance) =>
-    <String, dynamic>{'leave': instance.leave};
+Map<String, dynamic> _$CreateBulkAttendanceRequestToJson(
+  CreateBulkAttendanceRequest instance,
+) => <String, dynamic>{
+  'date': instance.date,
+  'shift': instance.shift,
+  'user_ids': instance.userIds,
+};
 
-LeavesListResponse _$LeavesListResponseFromJson(Map<String, dynamic> json) =>
-    LeavesListResponse(
-      leaves: (json['leaves'] as List<dynamic>)
-          .map((e) => Leave.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
+BulkAttendanceResponse _$BulkAttendanceResponseFromJson(
+  Map<String, dynamic> json,
+) => BulkAttendanceResponse(
+  success: json['success'] as bool,
+  message: json['message'] as String?,
+);
 
-Map<String, dynamic> _$LeavesListResponseToJson(LeavesListResponse instance) =>
-    <String, dynamic>{'leaves': instance.leaves};
+Map<String, dynamic> _$BulkAttendanceResponseToJson(
+  BulkAttendanceResponse instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'message': instance.message,
+};

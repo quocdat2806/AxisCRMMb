@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/navigation/router_path.dart';
-import '../../blocs/login/login_cubit.dart';
+import '../../cubits/login/login_cubit.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
 
