@@ -4,10 +4,10 @@ import 'package:axis_crm/core/di/injection_container.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/entity/user.dart';
 import 'package:axis_crm/presentation/cubits/worksheet/worksheet_cubit.dart';
-import 'package:axis_crm/presentation/screens/worksheet/reconcile_worksheet_screen.dart';
 import 'package:axis_crm/presentation/widgets/app_button.dart';
 import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
+import '../timekeeping/timekeeping_screen.dart';
 
 class WorksheetScreen extends StatelessWidget {
   const WorksheetScreen({required this.user, super.key});
@@ -30,31 +30,45 @@ class _WorksheetView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WorksheetCubit, WorksheetState>(
       builder: (BuildContext context, WorksheetState state) {
-        return SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(18),
-            children: <Widget>[
-              PageTitle(title: 'Bảng công'),
-              const SizedBox(height: 20),
-              _AttendanceCalendar(
-                month: state.currentMonth,
-                attendanceDays: state.attendanceDays,
-                fullDays: state.fullDays,
-                halfDays: state.halfDays,
-                absentDays: state.absentDays,
-              ),
-              const SizedBox(height: 20),
-              AppButton(
-                label: 'Đối chiếu bảng công',
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const ReconcileWorksheetScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
+        return Scaffold(
+          backgroundColor: const Color(0xFFF4F7FC),
+          body: SafeArea(
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.all(18),
+                    children: <Widget>[
+                      PageTitle(title: 'Bảng công'),
+                      const SizedBox(height: 20),
+                      _AttendanceCalendar(
+                        month: state.currentMonth,
+                        attendanceDays: state.attendanceDays,
+                        fullDays: state.fullDays,
+                        halfDays: state.halfDays,
+                        absentDays: state.absentDays,
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: AppButton(
+                    label: 'Chấm công',
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const TimekeepingScreen(),
+                        ),
+                      );
+                      if (context.mounted) {
+                        context.read<WorksheetCubit>().loadWorksheet();
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

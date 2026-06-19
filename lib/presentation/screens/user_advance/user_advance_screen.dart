@@ -99,18 +99,24 @@ class _AdvanceView extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(18),
-                  child: AppButton(
-                    label: 'Tạo đơn ứng tiền',
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => BlocProvider<UserAdvanceCubit>.value(
-                            value: context.read<UserAdvanceCubit>(),
-                            child: const _CreateAdvanceScreen(),
-                          ),
-                        ),
-                      );
-                    },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      AppButton(
+                        label: 'Tạo đơn ứng tiền',
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) =>
+                                  BlocProvider<UserAdvanceCubit>.value(
+                                    value: context.read<UserAdvanceCubit>(),
+                                    child: const _CreateAdvanceScreen(),
+                                  ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -256,7 +262,6 @@ class _CreateAdvanceScreen extends StatefulWidget {
 
 class _CreateAdvanceScreenState extends State<_CreateAdvanceScreen> {
   final TextEditingController _amountController = TextEditingController();
-  String _amountInWords = '';
   bool _hasHandledSuccess = false;
 
   @override
@@ -394,35 +399,21 @@ class _CreateAdvanceScreenState extends State<_CreateAdvanceScreen> {
                           ),
                         ),
                         onChanged: (String value) {
-                          final String cleaned = value.replaceAll(RegExp(r'[^\d]'), '');
+                          final String cleaned = value.replaceAll(
+                            RegExp(r'[^\d]'),
+                            '',
+                          );
                           if (cleaned.isEmpty) {
-                            setState(() {
-                              _amountInWords = '';
-                            });
                             cubit.advanceAmountChanged('');
                             return;
                           }
                           final int? amount = int.tryParse(cleaned);
                           if (amount != null) {
-                            setState(() {
-                              _amountInWords = _numberToVietnamese(amount);
-                            });
                             cubit.advanceAmountChanged(amount.toString());
                           }
                         },
                       ),
-                      if (_amountInWords.isNotEmpty) ...<Widget>[
-                        const SizedBox(height: 8),
-                        Text(
-                          _amountInWords,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF667085),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
+
                       const SizedBox(height: 14),
 
                       AppTextField(
@@ -469,86 +460,6 @@ class _CreateAdvanceScreenState extends State<_CreateAdvanceScreen> {
     }
     return buffer.toString();
   }
-
-  String _numberToVietnamese(int value) {
-    if (value == 0) return 'không đồng';
-
-    final List<String> units = ['', 'nghìn', 'triệu', 'tỷ'];
-    final List<String> digits = [
-      'không',
-      'một',
-      'hai',
-      'ba',
-      'bốn',
-      'năm',
-      'sáu',
-      'bảy',
-      'tám',
-      'chín',
-    ];
-
-    String result = '';
-    List<int> chunks = [];
-
-    int temp = value;
-    while (temp > 0) {
-      chunks.insert(0, temp % 1000);
-      temp ~/= 1000;
-    }
-
-    for (int i = 0; i < chunks.length; i++) {
-      int chunk = chunks[i];
-      int unitIndex = chunks.length - 1 - i;
-      if (chunk > 0) {
-        String chunkVietnamese = _threeDigitsToVietnamese(chunk, digits);
-        if (unitIndex > 0) {
-          result = '$result $chunkVietnamese ${units[unitIndex]}'.trim();
-        } else {
-          result = '$result $chunkVietnamese'.trim();
-        }
-      }
-    }
-
-    result = '$result đồng'.trim();
-    return result.replaceAll(RegExp(r'\s+'), ' ').trim();
-  }
-
-  String _threeDigitsToVietnamese(int value, List<String> digits) {
-    if (value == 0) return '';
-    if (value == 100) return 'một trăm';
-
-    String result = '';
-
-    int hundreds = value ~/ 100;
-    if (hundreds > 0) {
-      result = '${digits[hundreds]} trăm';
-    }
-
-    int remainder = value % 100;
-    if (remainder > 0) {
-      if (hundreds > 0 && remainder < 100) {
-        result += ' ';
-      }
-      if (remainder < 10) {
-        result += digits[remainder];
-      } else if (remainder < 20) {
-        result += 'mười ${digits[remainder - 10]}';
-      } else {
-        int tens = remainder ~/ 10;
-        int ones = remainder % 10;
-        result += '${digits[tens]} mươi';
-        if (ones > 0) {
-          if (ones == 5) {
-            result += ' lăm';
-          } else {
-            result += ' ${digits[ones]}';
-          }
-        }
-      }
-    }
-
-    return result.trim();
-  }
 }
 
 class _DateField extends StatelessWidget {
@@ -586,7 +497,6 @@ class _DateField extends StatelessWidget {
     return '$day/$month/${date.year}';
   }
 }
-
 
 String _formatMoney(int value) {
   final String raw = value.toString();

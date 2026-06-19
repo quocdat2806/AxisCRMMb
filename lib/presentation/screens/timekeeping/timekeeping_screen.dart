@@ -49,45 +49,54 @@ class _TimeKeepingView extends StatelessWidget {
       builder: (BuildContext context, TimeKeepingState state) {
         final TimeKeepingCubit cubit = context.read<TimeKeepingCubit>();
 
-        return SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(18),
-            children: <Widget>[
-              const PageTitle(title: 'Chấm công'),
-              const SizedBox(height: 16),
-              SectionCard(
-                child: Column(
-                  spacing: 18,
-                  children: <Widget>[
-                    _DateField(
-                      label: 'Ngày chấm công',
-                      date: state.timeKeepingDate,
-                      onPicked: cubit.timeKeepingDateChanged,
-                    ),
-                    _TimeKeepingTypeDropdown(
-                      label: 'Loại chấm công',
-                      value: state.timeKeepingType,
-                      onChanged: cubit.timeKeepingTypeChanged,
-                    ),
-                    AppTextField(
-                      label: 'Ghi chú (nếu có)',
-                      hintText: 'Nhập ghi chú',
-                      prefixIcon: Icons.edit_note_outlined,
-                      maxLines: 3,
-                      textInputAction: TextInputAction.done,
-                      onChanged: cubit.timeKeepingReasonChanged,
-                    ),
-                    AppButton(
-                      label: 'Chấm công',
-                      isLoading: state.isSubmitting,
-                      onPressed: state.isSubmitting
-                          ? null
-                          : cubit.submitTimeKeepingRequest,
-                    ),
-                  ],
+        return Scaffold(
+          backgroundColor: const Color(0xFFF4F7FC),
+          appBar: AppBar(
+            title: const PageTitle(title: 'Chấm công'),
+            backgroundColor: const Color(0xFFF4F7FC),
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Color(0xFF17233C)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(18),
+              children: <Widget>[
+                SectionCard(
+                  child: Column(
+                    spacing: 18,
+                    children: <Widget>[
+                      _DateField(
+                        label: 'Ngày chấm công',
+                        date: state.timeKeepingDate,
+                        onPicked: cubit.timeKeepingDateChanged,
+                      ),
+                      _TimeKeepingTypeDropdown(
+                        label: 'Loại chấm công',
+                        value: state.timeKeepingType,
+                        onChanged: cubit.timeKeepingTypeChanged,
+                      ),
+                      AppTextField(
+                        label: 'Ghi chú (nếu có)',
+                        hintText: 'Nhập ghi chú',
+                        prefixIcon: Icons.edit_note_outlined,
+                        textInputAction: TextInputAction.done,
+                        onChanged: cubit.timeKeepingReasonChanged,
+                      ),
+                      AppButton(
+                        label: 'Chấm công',
+                        isLoading: state.isSubmitting,
+                        onPressed: state.isSubmitting
+                            ? null
+                            : cubit.submitTimeKeepingRequest,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

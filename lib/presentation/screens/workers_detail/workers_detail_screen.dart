@@ -7,11 +7,13 @@ import 'package:axis_crm/entity/user.dart';
 import 'package:axis_crm/presentation/cubits/workers_detail/workers_detail_cubit.dart';
 import 'package:axis_crm/presentation/screens/admin_advance_screen/admin_advance_screen.dart';
 import 'package:axis_crm/presentation/screens/admin_worksheet_screen/admin_worksheet_screen.dart';
-import 'package:axis_crm/presentation/screens/workers_edit/workers_edit_screen.dart';
 import 'package:axis_crm/presentation/widgets/app_button.dart';
 import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
 import 'package:axis_crm/presentation/screens/yearly_summary/yearly_summary_screen.dart';
+import 'package:axis_crm/presentation/cubits/workers_edit/workers_edit_cubit.dart';
+import 'package:axis_crm/presentation/widgets/app_text_field.dart';
+import 'package:axis_crm/presentation/widgets/money_input_formatter.dart';
 
 class WorkersDetailScreen extends StatelessWidget {
   const WorkersDetailScreen({required this.user, super.key});
@@ -37,141 +39,58 @@ class _WorkersDetailView extends StatelessWidget {
     return BlocBuilder<WorkersDetailCubit, WorkersDetailState>(
       builder: (BuildContext context, WorkersDetailState state) {
         final WorkersDetailCubit cubit = context.read<WorkersDetailCubit>();
-        return Scaffold(
-          backgroundColor: const Color(0xFFF4F7FC),
-          appBar: AppBar(
-            title: const PageTitle(title: 'Chi tiết thợ'),
+        final String displayName = state.user.nickname ?? state.user.name;
+
+        return DefaultTabController(
+          length: 4,
+          child: Scaffold(
             backgroundColor: const Color(0xFFF4F7FC),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
+            appBar: AppBar(
+              title: PageTitle(title: 'Chi tiết thợ - $displayName'),
+              backgroundColor: const Color(0xFFF4F7FC),
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Color(0xFF17233C)),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              bottom: const TabBar(
+                isScrollable: true,
+                tabAlignment: TabAlignment.center,
+                labelColor: Color(0xFF2563EB),
+                unselectedLabelColor: Color(0xFF667085),
+                indicatorColor: Color(0xFF2563EB),
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+                unselectedLabelStyle: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+                tabs: [
+                  Tab(text: 'Chấm công'),
+                  Tab(text: 'Ứng tiền'),
+                  Tab(text: 'Thông tin'),
+                  Tab(text: 'Tổng kết năm'),
+                ],
+              ),
             ),
-          ),
-          body: SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.all(18),
-              children: <Widget>[
-                Text(
-                  'Tên thợ: ${state.user.name}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFF17233C),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                Text(
-                  'Biệt danh: ${state.user.nickname ?? 'Chưa thiết lập'}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFF17233C),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                Text(
-                  'SĐT: ${state.user.phone}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFF17233C),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                Text(
-                  'Lương mặc định: ${state.user.defaultDailyRate != null ? "${_formatMoney(state.user.defaultDailyRate!)} vnđ/ngày" : "Chưa cài đặt"}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFF17233C),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                AppButton(
-                  label: 'Tổng kết năm',
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => YearlySummaryScreen(targetUser: state.user),
-                      ),
-                    );
+            body: TabBarView(
+              children: [
+                _TimekeepingTab(state: state, cubit: cubit),
+                _AdvanceTab(state: state, cubit: cubit),
+                _InfoTab(
+                  user: state.user,
+                  onUpdated: (updatedUser) {
+                    cubit.updateUser(updatedUser);
+                    cubit.refresh();
                   },
                 ),
-                const SizedBox(height: 16),
-
-                AppButton(
-                  label: 'Chỉnh sửa',
-                  onPressed: () async {
-                    final updatedUser = await Navigator.of(context).push<User>(
-                      MaterialPageRoute<User>(
-                        builder: (_) => WorkersEditScreen(user: state.user),
-                      ),
-                    );
-                    if (updatedUser != null) {
-                      cubit.updateUser(updatedUser);
-                      cubit.refresh();
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: AppButton(
-                        label: 'Chấm công',
-                        onPressed: () async {
-                          final result = await Navigator.of(context).push<bool>(
-                            MaterialPageRoute<bool>(
-                              builder: (_) => AdminWorksheetScreen(
-                                userId: cubit.state.userId,
-                                userName: state.user.name,
-                              ),
-                            ),
-                          );
-                          if (result == true) {
-                            cubit.refresh();
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AppButton(
-                        label: 'Ứng tiền',
-                        onPressed: () async {
-                          final result = await Navigator.of(context).push<bool>(
-                            MaterialPageRoute<bool>(
-                              builder: (_) => AdminAdvanceScreen(
-                                userId: cubit.state.userId,
-                                userName: state.user.name,
-                              ),
-                            ),
-                          );
-                          if (result == true) {
-                            cubit.refresh();
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _AttendanceCalendar(
-                  month: state.month,
-                  attendanceDays: state.attendanceDays,
-                  fullDays: state.fullDays,
-                  halfDays: state.halfDays,
-                  absentDays: state.absentDays,
-                  onPrevious: cubit.previousMonth,
-                  onNext: cubit.nextMonth,
-                ),
-                const SizedBox(height: 16),
-                _WorkerAdvanceRecordsSection(
-                  records: state.workerAdvanceRecords,
-                  isLoading: state.isLoading,
-                  hasMore: state.hasMoreWorkerAdvanceRecords,
-                  onLoadMore: cubit.loadMoreWorkerAdvanceRecords,
+                YearlySummaryScreen(
+                  targetUser: state.user,
+                  isTab: true,
+                  key: ValueKey(state.user),
                 ),
               ],
             ),
@@ -180,18 +99,306 @@ class _WorkersDetailView extends StatelessWidget {
       },
     );
   }
+}
 
-  String _formatMoney(int value) {
-    final String str = value.toString();
-    final StringBuffer result = StringBuffer();
-    final int length = str.length;
-    for (int i = 0; i < length; i++) {
-      if (i > 0 && (length - i) % 3 == 0) {
-        result.write('.');
+class _TimekeepingTab extends StatelessWidget {
+  const _TimekeepingTab({required this.state, required this.cubit});
+
+  final WorkersDetailState state;
+  final WorkersDetailCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(18),
+            children: <Widget>[
+              _AttendanceCalendar(
+                month: state.month,
+                attendanceDays: state.attendanceDays,
+                fullDays: state.fullDays,
+                halfDays: state.halfDays,
+                absentDays: state.absentDays,
+                onPrevious: cubit.previousMonth,
+                onNext: cubit.nextMonth,
+              ),
+            ],
+          ),
+        ),
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 0, 18, 20),
+            child: AppButton(
+              label: 'Chấm công',
+              onPressed: () async {
+                final result = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute<bool>(
+                    builder: (_) => AdminWorksheetScreen(
+                      userId: cubit.state.userId,
+                      userName: state.user.name,
+                    ),
+                  ),
+                );
+                if (result == true) {
+                  cubit.refresh();
+                }
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AdvanceTab extends StatelessWidget {
+  const _AdvanceTab({required this.state, required this.cubit});
+
+  final WorkersDetailState state;
+  final WorkersDetailCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(18),
+            children: <Widget>[
+              SectionCard(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: cubit.previousMonth,
+                      icon: const Icon(
+                        Icons.chevron_left,
+                        color: Color(0xFF17233C),
+                      ),
+                    ),
+                    Text(
+                      'Tháng ${state.month.month}/${state.month.year}',
+                      style: const TextStyle(
+                        color: Color(0xFF17233C),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: cubit.nextMonth,
+                      icon: const Icon(
+                        Icons.chevron_right,
+                        color: Color(0xFF17233C),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              _WorkerAdvanceRecordsSection(
+                records: state.workerAdvanceRecords,
+                isLoading: state.isLoading,
+                hasMore: state.hasMoreWorkerAdvanceRecords,
+                onLoadMore: cubit.loadMoreWorkerAdvanceRecords,
+              ),
+            ],
+          ),
+        ),
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 0, 18, 20),
+            child: AppButton(
+              label: 'Ứng tiền',
+              onPressed: () async {
+                final result = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute<bool>(
+                    builder: (_) => AdminAdvanceScreen(
+                      userId: cubit.state.userId,
+                      userName: state.user.name,
+                    ),
+                  ),
+                );
+                if (result == true) {
+                  cubit.refresh();
+                }
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InfoTab extends StatelessWidget {
+  const _InfoTab({required this.user, required this.onUpdated});
+
+  final User user;
+  final ValueChanged<User> onUpdated;
+
+  @override
+  Widget build(BuildContext context) {
+    final String formattedRate = user.defaultDailyRate != null
+        ? _formatMoney(user.defaultDailyRate!)
+        : '';
+
+    return BlocProvider<WorkersEditCubit>(
+      create: (_) => WorkersEditCubit(
+        apiClient: getIt<ApiClient>(),
+        user: user,
+        currentDailyRate: formattedRate,
+      ),
+      child: _InfoTabView(
+        initialNickname: user.nickname ?? '',
+        initialDailyRate: formattedRate,
+        user: user,
+        onUpdated: onUpdated,
+      ),
+    );
+  }
+
+  static String _formatMoney(int value) {
+    final String raw = value.toString();
+    final StringBuffer buffer = StringBuffer();
+    for (int i = 0; i < raw.length; i++) {
+      final int reverseIndex = raw.length - i;
+      buffer.write(raw[i]);
+      if (reverseIndex > 1 && reverseIndex % 3 == 1) {
+        buffer.write('.');
       }
-      result.write(str[i]);
     }
-    return result.toString();
+    return buffer.toString();
+  }
+}
+
+class _InfoTabView extends StatefulWidget {
+  const _InfoTabView({
+    required this.initialNickname,
+    required this.initialDailyRate,
+    required this.user,
+    required this.onUpdated,
+  });
+
+  final String initialNickname;
+  final String initialDailyRate;
+  final User user;
+  final ValueChanged<User> onUpdated;
+
+  @override
+  State<_InfoTabView> createState() => _InfoTabViewState();
+}
+
+class _InfoTabViewState extends State<_InfoTabView> {
+  late final TextEditingController _nicknameController;
+  late final TextEditingController _dailyRateController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nicknameController = TextEditingController(text: widget.initialNickname);
+    _dailyRateController = TextEditingController(text: widget.initialDailyRate);
+  }
+
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    _dailyRateController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<WorkersEditCubit, WorkersEditState>(
+      listener: (context, state) {
+        if (state.submitSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Cập nhật thông tin thành công'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          widget.onUpdated(state.updatedUser!);
+        }
+        if (state.submitError != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Lỗi: ${state.submitError}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          context.read<WorkersEditCubit>().clearError();
+        }
+      },
+      builder: (BuildContext context, WorkersEditState state) {
+        final WorkersEditCubit editCubit = context.read<WorkersEditCubit>();
+
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 38),
+          children: <Widget>[
+            SectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Tên thợ: ${widget.user.name}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF17233C),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'Số điện thoại: ${widget.user.phone}',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF667085),
+                    ),
+                  ),
+                  const Divider(
+                    height: 24,
+                    thickness: 1,
+                    color: Color(0xFFE4E7EC),
+                  ),
+                  AppTextField(
+                    label: 'Biệt danh',
+                    hintText: 'Nhập biệt danh công nhân',
+                    controller: _nicknameController,
+                    prefixIcon: Icons.person_outline,
+                    onChanged: editCubit.nicknameChanged,
+                  ),
+                  const SizedBox(height: 14),
+                  AppTextField(
+                    label: 'Lương mặc định / ngày (vnđ)',
+                    hintText: 'Nhập số tiền lương 1 ngày',
+                    controller: _dailyRateController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [MoneyInputFormatter()],
+                    prefixIcon: Icons.payments_outlined,
+                    onChanged: editCubit.dailyRateChanged,
+                  ),
+                  const SizedBox(height: 18),
+                  AppButton(
+                    label: 'Cập nhật thông tin',
+                    isLoading: state.isSubmitting,
+                    onPressed:
+                        (state.nickname.trim().isEmpty ||
+                            state.dailyRate.trim().isEmpty)
+                        ? null
+                        : () => editCubit.submitUpdate(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 

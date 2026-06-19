@@ -1,3 +1,4 @@
+import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -46,14 +47,7 @@ class _ProjectDetailView extends StatelessWidget {
               icon: const Icon(Icons.arrow_back, color: Color(0xFF17233C)),
               onPressed: () => context.pop(),
             ),
-            title: const Text(
-              'Chi tiết công trình',
-              style: TextStyle(
-                color: Color(0xFF17233C),
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            title: PageTitle(title: 'Chi tiết công trình'),
             centerTitle: true,
           ),
           body: SafeArea(
@@ -68,7 +62,13 @@ class _ProjectDetailView extends StatelessWidget {
                       else if (state.project == null)
                         const EmptyState(message: 'Không tìm thấy công trình')
                       else ...[
-                        _ProjectHeader(project: state.project!),
+                        _ProjectHeader(
+                          project: state.project!,
+                          totalAdvances: state.advances.fold<double>(
+                            0.0,
+                            (sum, item) => sum + (item.amount ?? 0.0),
+                          ),
+                        ),
                         const SizedBox(height: 20),
                         const Text(
                           'Danh sách ứng tiền',
@@ -117,12 +117,17 @@ class _ProjectDetailView extends StatelessWidget {
 }
 
 class _ProjectHeader extends StatelessWidget {
-  const _ProjectHeader({required this.project});
+  const _ProjectHeader({required this.project, required this.totalAdvances});
 
   final Project project;
+  final double totalAdvances;
 
   @override
   Widget build(BuildContext context) {
+    final formattedTotal = totalAdvances
+        .toStringAsFixed(0)
+        .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
+
     return SectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,6 +170,15 @@ class _ProjectHeader extends StatelessWidget {
                         ),
                       ),
                     ],
+                    const SizedBox(height: 4),
+                    Text(
+                      'Tổng tiền ứng: $formattedTotal vnđ',
+                      style: const TextStyle(
+                        color: Color(0xFFEA580C),
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),

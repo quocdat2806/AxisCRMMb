@@ -15,22 +15,58 @@ class ReconcileWorksheetScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<ReconcileWorksheetCubit>(
       create: (_) => ReconcileWorksheetCubit(apiClient: getIt<ApiClient>()),
-      child: const _ReconcileWorksheetView(),
+      child: const ReconcileWorksheetView(),
     );
   }
 }
 
-class _ReconcileWorksheetView extends StatefulWidget {
-  const _ReconcileWorksheetView();
+class ReconcileWorksheetView extends StatefulWidget {
+  const ReconcileWorksheetView({this.isTab = false, super.key});
+  final bool isTab;
 
   @override
-  State<_ReconcileWorksheetView> createState() =>
-      _ReconcileWorksheetViewState();
+  State<ReconcileWorksheetView> createState() => _ReconcileWorksheetViewState();
 }
 
-class _ReconcileWorksheetViewState extends State<_ReconcileWorksheetView> {
+class _ReconcileWorksheetViewState extends State<ReconcileWorksheetView> {
   @override
   Widget build(BuildContext context) {
+    final body = BlocBuilder<ReconcileWorksheetCubit, ReconcileWorksheetState>(
+      builder: (BuildContext context, ReconcileWorksheetState state) {
+        final cubit = context.read<ReconcileWorksheetCubit>();
+
+        return SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(18),
+            children: <Widget>[
+              // Month Selector
+              _buildMonthSelector(context, state, cubit),
+              const SizedBox(height: 16),
+
+              if (state.isLoading)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40.0),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (state.error != null)
+                _buildErrorState(state.error!, cubit)
+              else if (state.data != null)
+                ..._buildReconcileContent(state.data!, state.currentMonth)
+              else
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40.0),
+                  child: Center(child: Text('Không có dữ liệu đối chiếu')),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (widget.isTab) {
+      return Scaffold(backgroundColor: const Color(0xFFF4F7FC), body: body);
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FC),
       appBar: AppBar(
@@ -42,37 +78,7 @@ class _ReconcileWorksheetViewState extends State<_ReconcileWorksheetView> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: BlocBuilder<ReconcileWorksheetCubit, ReconcileWorksheetState>(
-        builder: (BuildContext context, ReconcileWorksheetState state) {
-          final cubit = context.read<ReconcileWorksheetCubit>();
-
-          return SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.all(18),
-              children: <Widget>[
-                // Month Selector
-                _buildMonthSelector(context, state, cubit),
-                const SizedBox(height: 16),
-
-                if (state.isLoading)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 40.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else if (state.error != null)
-                  _buildErrorState(state.error!, cubit)
-                else if (state.data != null)
-                  ..._buildReconcileContent(state.data!, state.currentMonth)
-                else
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 40.0),
-                    child: Center(child: Text('Không có dữ liệu đối chiếu')),
-                  ),
-              ],
-            ),
-          );
-        },
-      ),
+      body: body,
     );
   }
 

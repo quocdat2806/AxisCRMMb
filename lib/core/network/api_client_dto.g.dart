@@ -516,3 +516,43 @@ Map<String, dynamic> _$BulkAttendanceResponseToJson(
   'success': instance.success,
   'message': instance.message,
 };
+
+ReconcileAdvanceItem _$ReconcileAdvanceItemFromJson(
+  Map<String, dynamic> json,
+) => ReconcileAdvanceItem(
+  date: json['date'] as String,
+  amount: (json['amount'] as num?)?.toDouble(),
+  note: json['note'] as String?,
+);
+
+Map<String, dynamic> _$ReconcileAdvanceItemToJson(
+  ReconcileAdvanceItem instance,
+) => <String, dynamic>{
+  'date': instance.date,
+  'amount': instance.amount,
+  'note': instance.note,
+};
+
+ReconcileAdvanceResponse _$ReconcileAdvanceResponseFromJson(
+  Map<String, dynamic> json,
+) => ReconcileAdvanceResponse(
+  success: json['success'] as bool,
+  mismatchDates: (json['mismatch_dates'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  workerAdvances: (json['worker_advances'] as List<dynamic>?)
+      ?.map((e) => ReconcileAdvanceItem.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  contractorAdvances: (json['contractor_advances'] as List<dynamic>?)
+      ?.map((e) => ReconcileAdvanceItem.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$ReconcileAdvanceResponseToJson(
+  ReconcileAdvanceResponse instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'mismatch_dates': instance.mismatchDates,
+  'worker_advances': instance.workerAdvances,
+  'contractor_advances': instance.contractorAdvances,
+};

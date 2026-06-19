@@ -50,9 +50,10 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<UsersListResponse> listUsers() async {
+  Future<UsersListResponse> listUsers({bool? isActive}) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'is_active': isActive};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<UsersListResponse>(
@@ -684,6 +685,33 @@ class _ApiClient implements ApiClient {
     late BulkAttendanceResponse _value;
     try {
       _value = BulkAttendanceResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<ReconcileAdvanceResponse> getReconcileAdvances(String month) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'month': month};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<ReconcileAdvanceResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/v1/me/worker-advances/reconcile',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ReconcileAdvanceResponse _value;
+    try {
+      _value = ReconcileAdvanceResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;

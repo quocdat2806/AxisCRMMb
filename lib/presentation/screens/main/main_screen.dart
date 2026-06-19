@@ -5,10 +5,10 @@ import 'package:axis_crm/entity/user.dart';
 
 import '../user_advance/user_advance_screen.dart';
 import '../projects/projects_screen.dart';
-import '../timekeeping/timekeeping_screen.dart';
 import '../worksheet/worksheet_screen.dart';
 import '../workers/workers_screen.dart';
 import '../profile/profile_screen.dart';
+import '../reconcile/reconcile_tab_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({required this.user, super.key});
@@ -117,20 +117,15 @@ class _UserView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MainCubit, MainState>(
-      listenWhen: (previous, current) =>
-          current.justReturnedFromOtherTab && current.previousTab == 2,
-      listener: (context, state) {
-        context.read<MainCubit>().clearJustReturned();
-      },
+    return BlocBuilder<MainCubit, MainState>(
       builder: (BuildContext context, MainState state) {
         return Scaffold(
           body: IndexedStack(
             index: state.currentTab,
             children: <Widget>[
-              _WorksheetWithRefresh(user: user),
+              WorksheetScreen(user: user),
               const UserAdvanceScreen(),
-              const TimekeepingScreen(),
+              const ReconcileTabScreen(),
               ProfileScreen(user: user),
             ],
           ),
@@ -184,7 +179,7 @@ class _UserView extends StatelessWidget {
                 ),
                 NavigationDestination(
                   icon: Text(
-                    'Chấm công',
+                    'Đối chiếu',
                     style: TextStyle(
                       color: Color(0xFF667085),
                       fontSize: 14,
@@ -192,7 +187,7 @@ class _UserView extends StatelessWidget {
                     ),
                   ),
                   selectedIcon: Text(
-                    'Chấm công',
+                    'Đối chiếu',
                     style: TextStyle(
                       color: Color(0xFF2457D6),
                       fontSize: 14,
@@ -225,33 +220,6 @@ class _UserView extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _WorksheetWithRefresh extends StatefulWidget {
-  const _WorksheetWithRefresh({required this.user});
-
-  final User user;
-
-  @override
-  State<_WorksheetWithRefresh> createState() => _WorksheetWithRefreshState();
-}
-
-class _WorksheetWithRefreshState extends State<_WorksheetWithRefresh> {
-  Key _worksheetKey = UniqueKey();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocListener<MainCubit, MainState>(
-      listenWhen: (previous, current) =>
-          current.justReturnedFromOtherTab && current.previousTab == 2,
-      listener: (context, state) {
-        setState(() {
-          _worksheetKey = UniqueKey();
-        });
-      },
-      child: WorksheetScreen(key: _worksheetKey, user: widget.user),
     );
   }
 }

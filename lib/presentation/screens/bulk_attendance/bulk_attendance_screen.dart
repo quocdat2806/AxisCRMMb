@@ -7,6 +7,7 @@ import 'package:axis_crm/entity/user.dart';
 import 'package:axis_crm/presentation/widgets/app_button.dart';
 import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
+import 'package:axis_crm/presentation/widgets/app_date_picker_dialog.dart';
 
 class BulkAttendanceScreen extends StatefulWidget {
   const BulkAttendanceScreen({
@@ -58,23 +59,9 @@ class _BulkAttendanceScreenState extends State<BulkAttendanceScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showDialog<DateTime>(
       context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF2457D6),
-              onPrimary: Colors.white,
-              onSurface: Color(0xFF17233C),
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: (context) => AppDatePickerDialog(initialDate: _selectedDate),
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {

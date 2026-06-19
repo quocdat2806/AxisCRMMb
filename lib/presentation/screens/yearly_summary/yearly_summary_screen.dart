@@ -1,3 +1,4 @@
+import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:axis_crm/core/di/injection_container.dart';
@@ -6,14 +7,14 @@ import 'package:axis_crm/core/network/api_client_dto.dart';
 import 'package:axis_crm/entity/user.dart';
 import 'package:axis_crm/presentation/cubits/yearly_summary/yearly_summary_cubit.dart';
 import 'package:axis_crm/presentation/cubits/yearly_summary/yearly_summary_state.dart';
-import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
 import 'package:axis_crm/presentation/screens/yearly_summary/yearly_mismatches_screen.dart';
 
 class YearlySummaryScreen extends StatelessWidget {
-  const YearlySummaryScreen({this.targetUser, super.key});
+  const YearlySummaryScreen({this.targetUser, this.isTab = false, super.key});
 
   final User? targetUser;
+  final bool isTab;
 
   @override
   Widget build(BuildContext context) {
@@ -22,33 +23,21 @@ class YearlySummaryScreen extends StatelessWidget {
         apiClient: getIt<ApiClient>(),
         targetUser: targetUser,
       ),
-      child: _YearlySummaryView(targetUser: targetUser),
+      child: _YearlySummaryView(targetUser: targetUser, isTab: isTab),
     );
   }
 }
 
 class _YearlySummaryView extends StatelessWidget {
-  const _YearlySummaryView({this.targetUser});
+  const _YearlySummaryView({this.targetUser, this.isTab = false});
 
   final User? targetUser;
+  final bool isTab;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FC),
-      appBar: AppBar(
-        title: PageTitle(
-          title: targetUser != null
-              ? 'Tổng kết năm - ${targetUser!.name}'
-              : 'Tổng kết năm',
-        ),
-        backgroundColor: const Color(0xFFF4F7FC),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF17233C)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
       body: BlocBuilder<YearlySummaryCubit, YearlySummaryState>(
         builder: (BuildContext context, YearlySummaryState state) {
           final cubit = context.read<YearlySummaryCubit>();
@@ -58,6 +47,19 @@ class _YearlySummaryView extends StatelessWidget {
               padding: const EdgeInsets.all(18),
               children: <Widget>[
                 // Year Selector
+                if (!isTab)
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.arrow_back_rounded),
+                      ),
+                      PageTitle(
+                        title: 'Tổng kết năm ${targetUser?.name ?? ''}',
+                      ),
+                    ],
+                  ),
+                if (!isTab) const SizedBox(height: 16),
                 _buildYearSelector(context, state, cubit),
                 const SizedBox(height: 16),
 
@@ -69,7 +71,11 @@ class _YearlySummaryView extends StatelessWidget {
                 else if (state.error != null)
                   _buildErrorState(state.error!, cubit)
                 else if (state.data != null)
-                  ..._buildSummaryContent(context, state.data!, state.currentYear)
+                  ..._buildSummaryContent(
+                    context,
+                    state.data!,
+                    state.currentYear,
+                  )
                 else
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 40.0),
@@ -168,13 +174,13 @@ class _YearlySummaryView extends StatelessWidget {
         icon: Icons.calendar_today_rounded,
         onViewMismatches: workDaysDiff != 0
             ? () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => YearlyMismatchesScreen(
-                      year: currentYear,
-                      targetUser: targetUser,
-                    ),
+                MaterialPageRoute<void>(
+                  builder: (_) => YearlyMismatchesScreen(
+                    year: currentYear,
+                    targetUser: targetUser,
                   ),
-                )
+                ),
+              )
             : null,
       ),
       const SizedBox(height: 16),
@@ -189,67 +195,16 @@ class _YearlySummaryView extends StatelessWidget {
         icon: Icons.payments_outlined,
         onViewMismatches: advanceDiff != 0
             ? () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => YearlyMismatchesScreen(
-                      year: currentYear,
-                      targetUser: targetUser,
-                    ),
+                MaterialPageRoute<void>(
+                  builder: (_) => YearlyMismatchesScreen(
+                    year: currentYear,
+                    targetUser: targetUser,
                   ),
-                )
+                ),
+              )
             : null,
       ),
       const SizedBox(height: 16),
-
-      // Card 3: Shift Breakdown Table
-      SectionCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const Row(
-              children: <Widget>[
-                Icon(
-                  Icons.bar_chart_rounded,
-                  color: Color(0xFF2563EB),
-                  size: 22,
-                ),
-                SizedBox(width: 8),
-                Text(
-                  'Chi tiết ngày công',
-                  style: TextStyle(
-                    color: Color(0xFF17233C),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildDetailTableRow(
-              label: 'Số ngày làm cả ngày (full)',
-              workerVal: '${worker.totalFullDays} ngày',
-              contractorVal: '${contractor.totalFullDays} ngày',
-              diff: (worker.totalFullDays - contractor.totalFullDays)
-                  .toDouble(),
-            ),
-            const Divider(color: Color(0xFFE4E7EC), height: 20),
-            _buildDetailTableRow(
-              label: 'Số ngày làm nửa ngày (half)',
-              workerVal: '${worker.totalHalfDays} ngày',
-              contractorVal: '${contractor.totalHalfDays} ngày',
-              diff: (worker.totalHalfDays - contractor.totalHalfDays)
-                  .toDouble(),
-            ),
-            const Divider(color: Color(0xFFE4E7EC), height: 20),
-            _buildDetailTableRow(
-              label: 'Số ngày vắng/nghỉ (absent)',
-              workerVal: '${worker.totalAbsentDays} ngày',
-              contractorVal: '${contractor.totalAbsentDays} ngày',
-              diff: (worker.totalAbsentDays - contractor.totalAbsentDays)
-                  .toDouble(),
-            ),
-          ],
-        ),
-      ),
     ];
   }
 
@@ -400,7 +355,11 @@ class _YearlySummaryView extends StatelessWidget {
               Center(
                 child: TextButton.icon(
                   onPressed: onViewMismatches,
-                  icon: const Icon(Icons.arrow_forward_rounded, size: 16, color: Color(0xFF2563EB)),
+                  icon: const Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 16,
+                    color: Color(0xFF2563EB),
+                  ),
                   label: const Text(
                     'Xem ngày lệch',
                     style: TextStyle(
@@ -443,73 +402,12 @@ class _YearlySummaryView extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailTableRow({
-    required String label,
-    required String workerVal,
-    required String contractorVal,
-    required double diff,
-  }) {
-    final String diffText = diff == 0
-        ? 'Khớp'
-        : (diff > 0 ? '+${diff.toInt()}' : '${diff.toInt()}');
-    final Color diffColor = diff == 0
-        ? const Color(0xFF2E7D32)
-        : const Color(0xFFC62828);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          label,
-          style: const TextStyle(
-            color: Color(0xFF17233C),
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                targetUser != null ? 'Thợ khai: $workerVal' : 'Bạn khai: $workerVal',
-                style: const TextStyle(color: Color(0xFF667085), fontSize: 13),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                targetUser != null ? 'Bạn chấm: $contractorVal' : 'Thầu chấm: $contractorVal',
-                style: const TextStyle(color: Color(0xFF667085), fontSize: 13),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
-              decoration: BoxDecoration(
-                color: diffColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                diffText,
-                style: TextStyle(
-                  color: diffColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   String _formatDiffText(double diff, String unit) {
     if (diff == 0) return 'Trùng khớp';
-    final String sign = diff > 0 ? '+' : '';
     if (unit == 'vnđ') {
-      return 'Lệch: $sign${_formatMoney(diff)} vnđ';
+      return 'Lệch: ${_formatMoney(diff)} vnđ';
     }
-    return 'Lệch: $sign${diff.toStringAsFixed(diff.truncateToDouble() == diff ? 0 : 1)} $unit';
+    return 'Lệch: ${diff.toStringAsFixed(diff.truncateToDouble() == diff ? 0 : 1)} $unit';
   }
 
   Color _getDiffColor(double diff) {

@@ -2,27 +2,31 @@ part of 'workers_cubit.dart';
 
 class WorkersState extends Equatable {
   const WorkersState({
-    this.users = const <User>[],
+    this.activeUsers = const <User>[],
+    this.hiddenUsers = const <User>[],
     this.isLoading = false,
     this.error,
   });
 
-  final List<User> users;
+  final List<User> activeUsers;
+  final List<User> hiddenUsers;
   final bool isLoading;
   final String? error;
 
   WorkersState copyWith({
-    List<User>? users,
+    List<User>? activeUsers,
+    List<User>? hiddenUsers,
     bool? isLoading,
     String? error,
   }) {
     return WorkersState(
-      users: users ?? this.users,
+      activeUsers: activeUsers ?? this.activeUsers,
+      hiddenUsers: hiddenUsers ?? this.hiddenUsers,
       isLoading: isLoading ?? this.isLoading,
       error: error,
     );
   }
 
   @override
-  List<Object?> get props => <Object?>[users, isLoading, error];
+  List<Object?> get props => <Object?>[activeUsers, hiddenUsers, isLoading, error];
 }

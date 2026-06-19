@@ -15,7 +15,9 @@ abstract class ApiClient {
 
   // Users
   @GET('/v1/users')
-  Future<UsersListResponse> listUsers();
+  Future<UsersListResponse> listUsers({
+    @Query('is_active') bool? isActive,
+  });
 
   @GET('/v1/me/attendance')
   Future<AttendanceRecordListResponse> getCurrentWorkerAttendanceRecords(
@@ -134,5 +136,10 @@ abstract class ApiClient {
   @POST('/v1/attendance/bulk')
   Future<BulkAttendanceResponse> createBulkAttendance(
     @Body() CreateBulkAttendanceRequest request,
+  );
+
+  @GET('/v1/me/worker-advances/reconcile')
+  Future<ReconcileAdvanceResponse> getReconcileAdvances(
+    @Query('month') String month,
   );
 }

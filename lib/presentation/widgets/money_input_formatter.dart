@@ -10,7 +10,6 @@ class MoneyInputFormatter extends TextInputFormatter {
       return newValue.copyWith(text: '');
     }
 
-    // Lọc sạch toàn bộ ký tự không phải là chữ số
     final String digits = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
     if (digits.isEmpty) {
       return const TextEditingValue(
@@ -24,7 +23,6 @@ class MoneyInputFormatter extends TextInputFormatter {
       return oldValue;
     }
 
-    // Định dạng phân tách phần nghìn bằng dấu chấm (.)
     final String formatted = _formatMoney(value);
     return TextEditingValue(
       text: formatted,

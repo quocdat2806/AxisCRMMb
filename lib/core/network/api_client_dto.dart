@@ -533,3 +533,43 @@ class BulkAttendanceResponse {
   Map<String, dynamic> toJson() => _$BulkAttendanceResponseToJson(this);
 }
 
+@JsonSerializable()
+class ReconcileAdvanceItem {
+  final String date;
+  final double? amount;
+  final String? note;
+
+  ReconcileAdvanceItem({
+    required this.date,
+    this.amount,
+    this.note,
+  });
+
+  factory ReconcileAdvanceItem.fromJson(Map<String, dynamic> json) =>
+      _$ReconcileAdvanceItemFromJson(json);
+  Map<String, dynamic> toJson() => _$ReconcileAdvanceItemToJson(this);
+}
+
+@JsonSerializable()
+class ReconcileAdvanceResponse {
+  final bool success;
+  @JsonKey(name: 'mismatch_dates')
+  final List<String>? mismatchDates;
+  @JsonKey(name: 'worker_advances')
+  final List<ReconcileAdvanceItem>? workerAdvances;
+  @JsonKey(name: 'contractor_advances')
+  final List<ReconcileAdvanceItem>? contractorAdvances;
+
+  ReconcileAdvanceResponse({
+    required this.success,
+    this.mismatchDates,
+    this.workerAdvances,
+    this.contractorAdvances,
+  });
+
+  factory ReconcileAdvanceResponse.fromJson(Map<String, dynamic> json) =>
+      _$ReconcileAdvanceResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$ReconcileAdvanceResponseToJson(this);
+}
+
+

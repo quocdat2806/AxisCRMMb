@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:axis_crm/entity/user.dart';
-import 'package:axis_crm/presentation/widgets/app_button.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
 import 'package:axis_crm/presentation/widgets/page_title.dart';
-import 'package:axis_crm/presentation/screens/yearly_summary/yearly_summary_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({required this.user, super.key});
@@ -111,17 +109,6 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            AppButton(
-              label: 'Tổng kết năm',
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const YearlySummaryScreen(),
-                  ),
-                );
-              },
             ),
           ],
         ),
