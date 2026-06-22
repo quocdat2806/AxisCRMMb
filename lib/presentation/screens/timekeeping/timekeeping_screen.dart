@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 
 import '../../cubits/time_keeping/time_keeping_cubit.dart';
 import '../../widgets/app_button.dart';
@@ -190,7 +191,5 @@ class _DateField extends StatelessWidget {
 }
 
 String _formatDate(DateTime date) {
-  final String day = date.day.toString().padLeft(2, '0');
-  final String month = date.month.toString().padLeft(2, '0');
-  return '$day/$month/${date.year}';
+  return AppDateUtils.formatLunarDate(date);
 }

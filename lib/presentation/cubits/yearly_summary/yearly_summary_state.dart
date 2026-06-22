@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:axis_crm/core/network/api_client_dto.dart';
+import 'package:lunar/lunar.dart';
 
 class YearlySummaryState extends Equatable {
   const YearlySummaryState({
@@ -15,8 +16,9 @@ class YearlySummaryState extends Equatable {
   final String? error;
 
   factory YearlySummaryState.initial() {
+    final Lunar lunar = Lunar.fromDate(DateTime.now());
     return YearlySummaryState(
-      currentYear: DateTime.now().year.toString(),
+      currentYear: lunar.getYear().toString(),
     );
   }
 

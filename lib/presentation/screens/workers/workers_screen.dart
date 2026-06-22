@@ -199,6 +199,9 @@ class _WorkersList extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 final cubit = context.read<WorkersCubit>();
+                final navigator = Navigator.of(context);
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+
                 Navigator.of(dialogContext).pop();
 
                 // Show loading dialog
@@ -215,29 +218,27 @@ class _WorkersList extends StatelessWidget {
                 // Call API
                 final success = await cubit.updateUserStatus(user.id, !isCurrentlyActive);
 
-                if (context.mounted) {
-                  // Dismiss loading dialog
-                  Navigator.of(context).pop();
+                // Dismiss loading dialog
+                navigator.pop();
 
-                  if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          isCurrentlyActive
-                              ? 'Đã ẩn người dùng thành công'
-                              : 'Đã hiển thị người dùng thành công',
-                        ),
-                        backgroundColor: Colors.green,
+                if (success) {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        isCurrentlyActive
+                            ? 'Đã ẩn người dùng thành công'
+                            : 'Đã hiển thị người dùng thành công',
                       ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(cubit.state.error ?? 'Thao tác thất bại'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } else {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(cubit.state.error ?? 'Thao tác thất bại'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
               },
               child: Text(

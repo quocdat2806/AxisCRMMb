@@ -41,7 +41,7 @@ class AppRouter {
       ),
       GoRoute(
         name: RouterPath.projectDetail,
-        path: '/project/:id',
+        path: RouterPath.projectDetail,
         builder: (_, GoRouterState state) {
           final project = state.extra as Project;
           return ProjectDetailScreen(project: project);
@@ -49,7 +49,7 @@ class AppRouter {
       ),
       GoRoute(
         name: RouterPath.adminAdvanceFromProject,
-        path: '/project/:id/advance',
+        path: RouterPath.adminAdvanceFromProject,
         builder: (_, GoRouterState state) {
           final String projectId = state.pathParameters['id']!;
           final projectName = state.extra as String? ?? '';

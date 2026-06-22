@@ -49,7 +49,7 @@ class UserAdvanceState extends Equatable {
   factory UserAdvanceState.initial({bool isOwner = false, String? userId}) {
     final DateTime now = DateTime.now();
     return UserAdvanceState(
-      advanceMonth: DateTime(now.year, now.month),
+      advanceMonth: AppDateUtils.getFirstDayOfLunarMonth(now),
       workerAdvances: const <WorkerAdvanceItem>[],
       workerPage: 1,
       hasMoreWorkerAdvances: true,

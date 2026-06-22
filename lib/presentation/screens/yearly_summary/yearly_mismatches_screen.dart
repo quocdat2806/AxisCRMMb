@@ -7,6 +7,7 @@ import 'package:axis_crm/entity/user.dart';
 import 'package:axis_crm/presentation/cubits/yearly_mismatches/yearly_mismatches_cubit.dart';
 import 'package:axis_crm/presentation/cubits/yearly_mismatches/yearly_mismatches_state.dart';
 import 'package:axis_crm/presentation/widgets/page_title.dart';
+import 'package:lunar/lunar.dart';
 
 class YearlyMismatchesScreen extends StatelessWidget {
   const YearlyMismatchesScreen({
@@ -138,7 +139,7 @@ class _YearlyMismatchesView extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFFFB74D).withOpacity(0.5), width: 1.2),
+            border: Border.all(color: const Color(0xFFFFB74D).withValues(alpha: 0.5), width: 1.2),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -219,7 +220,7 @@ class _YearlyMismatchesView extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFFFB74D).withOpacity(0.5), width: 1.2),
+            border: Border.all(color: const Color(0xFFFFB74D).withValues(alpha: 0.5), width: 1.2),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -385,33 +386,12 @@ class _YearlyMismatchesView extends StatelessWidget {
   String _formatDateStr(String dateStr) {
     try {
       final parsed = DateTime.parse(dateStr);
-      final weekdayStr = _getWeekdayStr(parsed.weekday);
-      final dayStr = parsed.day.toString().padLeft(2, '0');
-      final monthStr = parsed.month.toString().padLeft(2, '0');
-      return '$weekdayStr, $dayStr/$monthStr';
+      final lunar = Lunar.fromDate(parsed);
+      final monthVal = lunar.getMonth();
+      final String monthName = monthVal < 0 ? '${monthVal.abs()} (Nhuận)' : '$monthVal';
+      return 'Ngày ${lunar.getDay()}/$monthName (Âm lịch)';
     } catch (_) {
       return dateStr;
-    }
-  }
-
-  String _getWeekdayStr(int weekday) {
-    switch (weekday) {
-      case DateTime.monday:
-        return 'Thứ 2';
-      case DateTime.tuesday:
-        return 'Thứ 3';
-      case DateTime.wednesday:
-        return 'Thứ 4';
-      case DateTime.thursday:
-        return 'Thứ 5';
-      case DateTime.friday:
-        return 'Thứ 6';
-      case DateTime.saturday:
-        return 'Thứ 7';
-      case DateTime.sunday:
-        return 'Chủ Nhật';
-      default:
-        return '';
     }
   }
 

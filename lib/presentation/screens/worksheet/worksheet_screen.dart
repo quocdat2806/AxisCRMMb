@@ -7,6 +7,8 @@ import 'package:axis_crm/presentation/cubits/worksheet/worksheet_cubit.dart';
 import 'package:axis_crm/presentation/widgets/app_button.dart';
 import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
+import 'package:lunar/lunar.dart';
 import '../timekeeping/timekeeping_screen.dart';
 
 class WorksheetScreen extends StatelessWidget {
@@ -110,7 +112,7 @@ class _AttendanceCalendar extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  'Tháng ${month.month}/${month.year}',
+                  AppDateUtils.formatLunarMonthHeader(month),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Color(0xFF17233C),
@@ -206,13 +208,17 @@ class _AttendanceTile extends StatelessWidget {
       ),
     };
 
+    final DateTime cellDate = day.date ?? DateTime(month.year, month.month, day.day);
+    final Lunar lunar = Lunar.fromDate(cellDate);
+    final String displayLabel = '${lunar.getDay()}';
+
     return GestureDetector(
       onTap: () => _showDayDetailDialog(context),
       child: Container(
         alignment: Alignment.center,
         decoration: decoration,
         child: Text(
-          '${day.day}',
+          displayLabel,
           style: TextStyle(
             color: day.type == AttendanceType.empty
                 ? const Color(0xFF2563EB)
@@ -225,13 +231,15 @@ class _AttendanceTile extends StatelessWidget {
   }
 
   void _showDayDetailDialog(BuildContext context) {
+    final DateTime cellDate = day.date ?? DateTime(month.year, month.month, day.day);
+    final Lunar lunar = Lunar.fromDate(cellDate);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          title: Text('Ngày ${day.day}/${month.month}/${month.year}'),
+          title: Text('Ngày ${lunar.getDay()}/${lunar.getMonth()}/${lunar.getYear()} (Âm lịch)'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,24 +329,26 @@ List<AttendanceDay> _buildAttendanceDays(
   DateTime month,
   List<AttendanceDay> attendanceDays,
 ) {
-  final int totalDays = DateTime(month.year, month.month + 1, 0).day;
-  final int firstWeekday = DateTime(month.year, month.month).weekday;
+  final List<DateTime?> lunarGridDays = AppDateUtils.generateLunarCalendarDays(month);
 
-  final Map<int, AttendanceDay> attendanceByDay = <int, AttendanceDay>{
-    for (final AttendanceDay item in attendanceDays) item.day: item,
+  final Map<String, AttendanceDay> attendanceByDate = <String, AttendanceDay>{
+    for (final AttendanceDay item in attendanceDays)
+      if (item.date != null) '${item.date!.year}-${item.date!.month}-${item.date!.day}': item,
   };
 
-  final List<AttendanceDay> days = <AttendanceDay>[
-    for (int i = 1; i < firstWeekday; i++)
-      const AttendanceDay(day: 0, type: AttendanceType.empty),
-  ];
+  final List<AttendanceDay> days = <AttendanceDay>[];
 
-  for (int day = 1; day <= totalDays; day++) {
-    final AttendanceDay? dayData = attendanceByDay[day];
-    if (dayData != null) {
-      days.add(dayData);
+  for (final DateTime? date in lunarGridDays) {
+    if (date == null) {
+      days.add(const AttendanceDay(day: 0, type: AttendanceType.empty));
     } else {
-      days.add(AttendanceDay(day: day, type: AttendanceType.empty));
+      final String key = '${date.year}-${date.month}-${date.day}';
+      final AttendanceDay? dayData = attendanceByDate[key];
+      if (dayData != null) {
+        days.add(dayData);
+      } else {
+        days.add(AttendanceDay(day: date.day, type: AttendanceType.empty, date: date));
+      }
     }
   }
 

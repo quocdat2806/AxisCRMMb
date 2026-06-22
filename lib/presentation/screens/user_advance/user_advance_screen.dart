@@ -9,6 +9,7 @@ import 'package:axis_crm/presentation/widgets/section_card.dart';
 import 'package:axis_crm/presentation/widgets/empty_state.dart';
 import 'package:axis_crm/presentation/widgets/app_date_picker_dialog.dart';
 import 'package:axis_crm/presentation/widgets/money_input_formatter.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 
 class UserAdvanceScreen extends StatelessWidget {
   const UserAdvanceScreen({super.key});
@@ -237,11 +238,11 @@ class _MonthSwitcher extends StatelessWidget {
           ),
           Expanded(
             child: Text(
-              'Tháng ${month.month}/${month.year}',
+              AppDateUtils.formatLunarMonthHeader(month),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Color(0xFF17233C),
-                fontSize: 17,
+                fontSize: 16,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -492,9 +493,7 @@ class _DateField extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    final String day = date.day.toString().padLeft(2, '0');
-    final String month = date.month.toString().padLeft(2, '0');
-    return '$day/$month/${date.year}';
+    return AppDateUtils.formatLunarDate(date);
   }
 }
 
@@ -514,9 +513,7 @@ String _formatMoney(int value) {
 String _formatDateTime(String dateStr) {
   try {
     final DateTime date = DateTime.parse(dateStr);
-    final String day = date.day.toString().padLeft(2, '0');
-    final String month = date.month.toString().padLeft(2, '0');
-    return '$day/$month/${date.year}';
+    return AppDateUtils.formatLunarDate(date);
   } catch (_) {
     return dateStr;
   }

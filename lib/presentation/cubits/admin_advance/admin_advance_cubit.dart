@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/entity/user.dart';
+import 'package:axis_crm/core/di/injection_container.dart';
+import 'package:axis_crm/core/events/event_bus.dart';
 
 part 'admin_advance_state.dart';
 
@@ -93,6 +95,7 @@ class AdminAdvanceCubit extends Cubit<AdminAdvanceState> {
           isSubmitting: false,
           submitSuccess: true,
         ));
+        getIt<EventBus>().fire(AdvanceUpdatedEvent());
       } else {
         emit(state.copyWith(
           isSubmitting: false,

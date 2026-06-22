@@ -8,6 +8,8 @@ import 'package:axis_crm/presentation/widgets/app_button.dart';
 import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
 import 'package:axis_crm/presentation/widgets/app_date_picker_dialog.dart';
+import 'package:axis_crm/core/events/event_bus.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 
 class BulkAttendanceScreen extends StatefulWidget {
   const BulkAttendanceScreen({
@@ -98,6 +100,7 @@ class _BulkAttendanceScreenState extends State<BulkAttendanceScreen> {
               backgroundColor: const Color(0xFF2E7D32),
             ),
           );
+          getIt<EventBus>().fire(WorksheetUpdatedEvent());
           Navigator.of(context).pop();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -123,32 +126,9 @@ class _BulkAttendanceScreenState extends State<BulkAttendanceScreen> {
     }
   }
 
-  String _getWeekdayStr(int weekday) {
-    switch (weekday) {
-      case DateTime.monday:
-        return 'Thứ 2';
-      case DateTime.tuesday:
-        return 'Thứ 3';
-      case DateTime.wednesday:
-        return 'Thứ 4';
-      case DateTime.thursday:
-        return 'Thứ 5';
-      case DateTime.friday:
-        return 'Thứ 6';
-      case DateTime.saturday:
-        return 'Thứ 7';
-      case DateTime.sunday:
-        return 'Chủ Nhật';
-      default:
-        return '';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final bool isAllSelected = _selectedUserIds.length == widget.users.length;
-    final String dateFormatted = DateFormat('dd/MM/yyyy').format(_selectedDate);
-    final String weekdayStr = _getWeekdayStr(_selectedDate.weekday);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FC),
@@ -195,7 +175,7 @@ class _BulkAttendanceScreenState extends State<BulkAttendanceScreen> {
                               const Icon(Icons.calendar_month_rounded, color: Color(0xFF2457D6)),
                               const SizedBox(width: 10),
                               Text(
-                                '$weekdayStr, $dateFormatted',
+                                AppDateUtils.formatLunarHeaderDate(_selectedDate),
                                 style: const TextStyle(
                                   color: Color(0xFF17233C),
                                   fontSize: 16,

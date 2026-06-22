@@ -1,17 +1,35 @@
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/entity/user.dart';
+import 'package:axis_crm/core/di/injection_container.dart';
+import 'package:axis_crm/core/events/event_bus.dart';
 
 part 'workers_state.dart';
 
 class WorkersCubit extends Cubit<WorkersState> {
   WorkersCubit({required ApiClient apiClient})
       : _apiClient = apiClient,
-        super(const WorkersState());
+        super(const WorkersState()) {
+    _subscribeEvents();
+  }
 
   final ApiClient _apiClient;
+  StreamSubscription<WorkerUpdatedEvent>? _eventSubscription;
+
+  void _subscribeEvents() {
+    _eventSubscription = getIt<EventBus>().on<WorkerUpdatedEvent>().listen((event) {
+      loadWorkers();
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _eventSubscription?.cancel();
+    return super.close();
+  }
 
   Future<void> loadWorkers() async {
     emit(state.copyWith(isLoading: true, error: null));
@@ -39,6 +57,7 @@ class WorkersCubit extends Cubit<WorkersState> {
       );
       if (response.success) {
         await loadWorkers();
+        getIt<EventBus>().fire(WorkerUpdatedEvent());
         return true;
       } else {
         emit(state.copyWith(error: response.message ?? 'Cập nhật trạng thái thất bại'));

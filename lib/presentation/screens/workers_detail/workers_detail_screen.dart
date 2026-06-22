@@ -14,6 +14,9 @@ import 'package:axis_crm/presentation/screens/yearly_summary/yearly_summary_scre
 import 'package:axis_crm/presentation/cubits/workers_edit/workers_edit_cubit.dart';
 import 'package:axis_crm/presentation/widgets/app_text_field.dart';
 import 'package:axis_crm/presentation/widgets/money_input_formatter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
+import 'package:lunar/lunar.dart';
 
 class WorkersDetailScreen extends StatelessWidget {
   const WorkersDetailScreen({required this.user, super.key});
@@ -180,7 +183,7 @@ class _AdvanceTab extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Tháng ${state.month.month}/${state.month.year}',
+                      AppDateUtils.formatLunarMonthHeader(state.month),
                       style: const TextStyle(
                         color: Color(0xFF17233C),
                         fontSize: 18,
@@ -310,6 +313,29 @@ class _InfoTabViewState extends State<_InfoTabView> {
     super.dispose();
   }
 
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    try {
+      if (await canLaunchUrl(launchUri)) {
+        await launchUrl(launchUri);
+      } else {
+        await launchUrl(launchUri);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Không thể gọi số: $phoneNumber. Lỗi: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<WorkersEditCubit, WorkersEditState>(
@@ -352,13 +378,24 @@ class _InfoTabViewState extends State<_InfoTabView> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Text(
-                    'Số điện thoại: ${widget.user.phone}',
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF667085),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          'Số điện thoại: ${widget.user.phone}',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF667085),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.phone, color: Color(0xFF2457D6)),
+                        onPressed: () => _makePhoneCall(widget.user.phone),
+                      ),
+                    ],
                   ),
                   const Divider(
                     height: 24,
@@ -599,9 +636,10 @@ class _WorkerAdvanceItem extends StatelessWidget {
   String _formatDate(String dateStr) {
     try {
       final DateTime date = DateTime.parse(dateStr);
-      final String day = date.day.toString().padLeft(2, '0');
-      final String month = date.month.toString().padLeft(2, '0');
-      return '$day/$month/${date.year}';
+      final Lunar lunar = Lunar.fromDate(date);
+      final monthVal = lunar.getMonth();
+      final String monthName = monthVal < 0 ? '${monthVal.abs()} (Nhuận)' : '$monthVal';
+      return 'Ngày ${lunar.getDay()}/$monthName (Âm lịch)';
     } catch (_) {
       return dateStr;
     }
@@ -645,7 +683,7 @@ class _AttendanceCalendar extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  'Tháng ${month.month}/${month.year}',
+                  AppDateUtils.formatLunarMonthHeader(month),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Color(0xFF17233C),
@@ -671,7 +709,7 @@ class _AttendanceCalendar extends StatelessWidget {
               crossAxisSpacing: 8,
             ),
             itemBuilder: (_, int index) {
-              return _AttendanceTile(day: days[index]);
+              return _AttendanceTile(day: days[index], month: month);
             },
           ),
           const SizedBox(height: 16),
@@ -705,24 +743,26 @@ class _AttendanceCalendar extends StatelessWidget {
     DateTime month,
     List<WorkerAttendanceDay> attendanceDays,
   ) {
-    final int totalDays = DateTime(month.year, month.month + 1, 0).day;
-    final int firstWeekday = DateTime(month.year, month.month).weekday;
+    final List<DateTime?> lunarGridDays = AppDateUtils.generateLunarCalendarDays(month);
 
-    final Map<int, WorkerAttendanceDay> attendanceByDay =
-        <int, WorkerAttendanceDay>{
-          for (final WorkerAttendanceDay item in attendanceDays) item.day: item,
+    final Map<String, WorkerAttendanceDay> attendanceByDate =
+        <String, WorkerAttendanceDay>{
+          for (final WorkerAttendanceDay item in attendanceDays)
+            if (item.date != null) '${item.date!.year}-${item.date!.month}-${item.date!.day}': item,
         };
 
-    final List<WorkerAttendanceDay> result = <WorkerAttendanceDay>[
-      for (int i = 1; i < firstWeekday; i++)
-        WorkerAttendanceDay(day: 0, shift: '', status: ''),
-    ];
+    final List<WorkerAttendanceDay> result = <WorkerAttendanceDay>[];
 
-    for (int day = 1; day <= totalDays; day++) {
-      final WorkerAttendanceDay? dayData = attendanceByDay[day];
-      result.add(
-        dayData ?? WorkerAttendanceDay(day: day, shift: '', status: ''),
-      );
+    for (final DateTime? date in lunarGridDays) {
+      if (date == null) {
+        result.add(WorkerAttendanceDay(day: 0, shift: '', status: ''));
+      } else {
+        final String key = '${date.year}-${date.month}-${date.day}';
+        final WorkerAttendanceDay? dayData = attendanceByDate[key];
+        result.add(
+          dayData ?? WorkerAttendanceDay(day: date.day, shift: '', status: '', date: date),
+        );
+      }
     }
 
     return result;
@@ -730,9 +770,10 @@ class _AttendanceCalendar extends StatelessWidget {
 }
 
 class _AttendanceTile extends StatelessWidget {
-  const _AttendanceTile({required this.day});
+  const _AttendanceTile({required this.day, required this.month});
 
   final WorkerAttendanceDay day;
+  final DateTime month;
 
   @override
   Widget build(BuildContext context) {
@@ -770,11 +811,15 @@ class _AttendanceTile extends StatelessWidget {
       ),
     };
 
+    final DateTime cellDate = day.date ?? DateTime(month.year, month.month, day.day);
+    final Lunar lunar = Lunar.fromDate(cellDate);
+    final String displayLabel = '${lunar.getDay()}';
+
     return Container(
       alignment: Alignment.center,
       decoration: decoration,
       child: Text(
-        '${day.day}',
+        displayLabel,
         style: TextStyle(
           color: isWorked ? Colors.white : const Color(0xFF2563EB),
           fontWeight: FontWeight.w800,

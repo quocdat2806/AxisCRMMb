@@ -4,11 +4,13 @@ class WorkerAttendanceDay {
   final int day;
   final String shift;
   final String status;
+  final DateTime? date;
 
   WorkerAttendanceDay({
     required this.day,
     required this.shift,
     required this.status,
+    this.date,
   });
 }
 
@@ -39,7 +41,7 @@ class WorkersDetailState extends Equatable {
     final DateTime now = DateTime.now();
     return WorkersDetailState(
       user: user,
-      month: DateTime(now.year, now.month),
+      month: AppDateUtils.getFirstDayOfLunarMonth(now),
     );
   }
 

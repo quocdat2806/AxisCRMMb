@@ -8,6 +8,7 @@ import 'package:axis_crm/presentation/widgets/app_button.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
 import 'package:axis_crm/presentation/widgets/app_date_picker_dialog.dart';
 import 'package:axis_crm/presentation/widgets/money_input_formatter.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 
 class AdminAdvanceScreen extends StatelessWidget {
   const AdminAdvanceScreen({super.key, this.userId, this.userName});
@@ -353,8 +354,6 @@ class _DateField extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    final String day = date.day.toString().padLeft(2, '0');
-    final String month = date.month.toString().padLeft(2, '0');
-    return '$day/$month/${date.year}';
+    return AppDateUtils.formatLunarDate(date);
   }
 }

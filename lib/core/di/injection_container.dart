@@ -4,6 +4,8 @@ import 'package:axis_crm/presentation/cubits/session/session_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:axis_crm/core/events/event_bus.dart';
+
 final GetIt getIt = GetIt.instance;
 
 Future<void> initDependencies() async {
@@ -19,6 +21,7 @@ Future<void> _registerCore() async {
   final UserSessionService sessionService = UserSessionService();
   await sessionService.init();
   getIt.registerSingleton<UserSessionService>(sessionService);
+  getIt.registerSingleton<EventBus>(EventBus());
 }
 
 void _registerNetwork() {
@@ -34,11 +37,13 @@ void _registerNetwork() {
     ),
   );
 
-  dio.interceptors.add(LogInterceptor(
-    requestBody: true,
-    responseBody: true,
-    logPrint: (obj) => print('[API] $obj'),
-  ));
+  dio.interceptors.add(
+    LogInterceptor(
+      requestBody: true,
+      responseBody: true,
+      logPrint: (obj) => print('[API] $obj'),
+    ),
+  );
 
   dio.interceptors.add(
     InterceptorsWrapper(
@@ -47,18 +52,12 @@ void _registerNetwork() {
         if (userId != null && userId.isNotEmpty) {
           options.headers['X-User-ID'] = userId;
         }
-        print('[API] Request: ${options.method} ${options.uri}');
-        print('[API] Query params: ${options.queryParameters}');
         handler.next(options);
       },
       onResponse: (Response response, ResponseInterceptorHandler handler) {
-        print('[API] Response: ${response.statusCode} ${response.requestOptions.uri}');
-        print('[API] Response data: ${response.data}');
         handler.next(response);
       },
       onError: (DioException e, ErrorInterceptorHandler handler) {
-        print('[API] Error: ${e.message}');
-        print('[API] Error response: ${e.response?.data}');
         handler.next(e);
       },
     ),

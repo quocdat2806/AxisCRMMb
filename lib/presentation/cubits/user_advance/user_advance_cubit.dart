@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:axis_crm/core/di/injection_container.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/core/network/api_client_dto.dart';
+import 'package:axis_crm/core/events/event_bus.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 
 part 'user_advance_state.dart';
 
@@ -11,15 +14,30 @@ class UserAdvanceCubit extends Cubit<UserAdvanceState> {
   UserAdvanceCubit({bool isOwner = false, String? userId})
     : super(UserAdvanceState.initial()) {
     loadWorkerAdvances();
+    _subscribeEvents();
+  }
+
+  StreamSubscription<AdvanceUpdatedEvent>? _eventSubscription;
+
+  void _subscribeEvents() {
+    _eventSubscription = getIt<EventBus>().on<AdvanceUpdatedEvent>().listen((event) {
+      loadWorkerAdvances();
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _eventSubscription?.cancel();
+    return super.close();
   }
 
   void previousAdvanceMonth() {
-    emit(state.copyWith(advanceMonth: _shiftMonth(state.advanceMonth, -1)));
+    emit(state.copyWith(advanceMonth: AppDateUtils.previousLunarMonth(state.advanceMonth)));
     loadWorkerAdvances();
   }
 
   void nextAdvanceMonth() {
-    emit(state.copyWith(advanceMonth: _shiftMonth(state.advanceMonth, 1)));
+    emit(state.copyWith(advanceMonth: AppDateUtils.nextLunarMonth(state.advanceMonth)));
     loadWorkerAdvances();
   }
 
@@ -30,10 +48,19 @@ class UserAdvanceCubit extends Cubit<UserAdvanceState> {
     }
 
     try {
+      final DateTime firstDay = state.advanceMonth;
+      final List<DateTime?> lunarGridDays = AppDateUtils.generateLunarCalendarDays(firstDay);
+      final List<DateTime> lunarDays = lunarGridDays.whereType<DateTime>().toList();
+      final DateTime lastDay = lunarDays.isEmpty ? firstDay : lunarDays.last;
+
+      final String startDateStr = _formatApiDay(firstDay);
+      final String endDateStr = _formatApiDay(lastDay);
+
       final response = await getIt<ApiClient>().getWorkerAdvances(
-        _formatApiMonth(state.advanceMonth),
         page,
         100,
+        startDateStr,
+        endDateStr,
       );
 
       if (isClosed) return;
@@ -141,6 +168,7 @@ class UserAdvanceCubit extends Cubit<UserAdvanceState> {
           ),
         );
         if (!isClosed) loadWorkerAdvances();
+        getIt<EventBus>().fire(AdvanceUpdatedEvent());
       } else {
         emit(
           state.copyWith(
@@ -171,12 +199,9 @@ class UserAdvanceCubit extends Cubit<UserAdvanceState> {
     emit(state.copyWith(submitSuccess: false, submitError: null));
   }
 
-  DateTime _shiftMonth(DateTime source, int offset) {
-    return DateTime(source.year, source.month + offset);
-  }
-
-  String _formatApiMonth(DateTime date) {
+  String _formatApiDay(DateTime date) {
     final String month = date.month.toString().padLeft(2, '0');
-    return '${date.year}-$month';
+    final String day = date.day.toString().padLeft(2, '0');
+    return '${date.year}-$month-$day';
   }
 }

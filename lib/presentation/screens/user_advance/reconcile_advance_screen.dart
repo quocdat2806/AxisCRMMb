@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:axis_crm/core/di/injection_container.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/core/network/api_client_dto.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 import 'package:axis_crm/presentation/cubits/reconcile_advance/reconcile_advance_cubit.dart';
 import 'package:axis_crm/presentation/cubits/reconcile_advance/reconcile_advance_state.dart';
 import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
+import 'package:lunar/lunar.dart';
 
 class ReconcileAdvanceScreen extends StatelessWidget {
   const ReconcileAdvanceScreen({super.key});
@@ -82,6 +84,7 @@ class ReconcileAdvanceView extends StatelessWidget {
     ReconcileAdvanceState state,
     ReconcileAdvanceCubit cubit,
   ) {
+    final String lunarMonthHeader = AppDateUtils.formatLunarMonthHeader(state.currentMonth);
     return SectionCard(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -91,7 +94,7 @@ class ReconcileAdvanceView extends StatelessWidget {
             icon: const Icon(Icons.chevron_left, color: Color(0xFF17233C)),
           ),
           Text(
-            'Tháng ${state.currentMonth.month}/${state.currentMonth.year}',
+            lunarMonthHeader,
             style: const TextStyle(
               color: Color(0xFF17233C),
               fontSize: 18,
@@ -186,7 +189,7 @@ class ReconcileAdvanceView extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isMismatched
-                  ? const Color(0xFFFFB74D).withOpacity(0.5)
+                  ? const Color(0xFFFFB74D).withValues(alpha: 0.5)
                   : const Color(0xFFE4E7EC),
               width: 1.2,
             ),
@@ -353,33 +356,12 @@ class ReconcileAdvanceView extends StatelessWidget {
   String _formatDateStr(String dateStr) {
     try {
       final parsed = DateTime.parse(dateStr);
-      final weekdayStr = _getWeekdayStr(parsed.weekday);
-      final dayStr = parsed.day.toString().padLeft(2, '0');
-      final monthStr = parsed.month.toString().padLeft(2, '0');
-      return '$weekdayStr, $dayStr/$monthStr';
+      final lunar = Lunar.fromDate(parsed);
+      final monthVal = lunar.getMonth();
+      final String monthName = monthVal < 0 ? '${monthVal.abs()} (Nhuận)' : '$monthVal';
+      return 'Ngày ${lunar.getDay()}/$monthName (Âm lịch)';
     } catch (_) {
       return dateStr;
-    }
-  }
-
-  String _getWeekdayStr(int weekday) {
-    switch (weekday) {
-      case DateTime.monday:
-        return 'Thứ 2';
-      case DateTime.tuesday:
-        return 'Thứ 3';
-      case DateTime.wednesday:
-        return 'Thứ 4';
-      case DateTime.thursday:
-        return 'Thứ 5';
-      case DateTime.friday:
-        return 'Thứ 6';
-      case DateTime.saturday:
-        return 'Thứ 7';
-      case DateTime.sunday:
-        return 'Chủ Nhật';
-      default:
-        return '';
     }
   }
 

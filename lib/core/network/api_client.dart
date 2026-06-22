@@ -15,15 +15,14 @@ abstract class ApiClient {
 
   // Users
   @GET('/v1/users')
-  Future<UsersListResponse> listUsers({
-    @Query('is_active') bool? isActive,
-  });
+  Future<UsersListResponse> listUsers({@Query('is_active') bool? isActive});
 
   @GET('/v1/me/attendance')
   Future<AttendanceRecordListResponse> getCurrentWorkerAttendanceRecords(
-    @Query('month') String month,
-    @Query('page_size') int pageSize,
-  );
+    @Query('page_size') int pageSize, [
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   @POST('/v1/me/attendance')
   Future<CreateAttendanceResponse> createAttendance(
@@ -53,10 +52,11 @@ abstract class ApiClient {
   @GET('/v1/attendance')
   Future<AttendanceRecordListResponse> getAttendanceForUser(
     @Query('user_id') String userId,
-    @Query('month') String month,
     @Query('page') int page,
-    @Query('page_size') int pageSize,
-  );
+    @Query('page_size') int pageSize, [
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   // Advances
   @POST('/v1/me/worker-advances')
@@ -73,12 +73,13 @@ abstract class ApiClient {
   Future<ProjectAdvancesListResponse> listProjectAdvances(
     @Query('project_id') String? projectId,
     @Query('user_id') String? userId,
-    @Query('month') String? month,
     @Query('page') int? page,
     @Query('page_size') int? pageSize,
     @Query('sort') String? sort,
-    @Query('order') String? order,
-  );
+    @Query('order') String? order, [
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   @POST('/v1/worker-advances')
   Future<AdminCreateWorkerAdvanceResponse> adminCreateWorkerAdvance(
@@ -87,18 +88,20 @@ abstract class ApiClient {
 
   @GET('/v1/me/worker-advances')
   Future<WorkerAdvancesListResponse> getWorkerAdvances(
-    @Query('month') String month,
     @Query('page') int page,
-    @Query('page_size') int pageSize,
-  );
+    @Query('page_size') int pageSize, [
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   @GET('/v1/worker-advances')
   Future<WorkerAdvancesListResponse> listWorkerAdvancesForUser(
     @Query('user_id') String userId,
-    @Query('month') String? month,
     @Query('page') int page,
-    @Query('page_size') int pageSize,
-  );
+    @Query('page_size') int pageSize, [
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   @PATCH('/v1/users/{id}')
   Future<UserUpdateResponse> updateUser(
@@ -107,31 +110,40 @@ abstract class ApiClient {
   );
 
   @GET('/v1/me/attendance/reconcile')
-  Future<ReconcileResponse> getReconcileAttendance(
-    @Query('month') String month,
-  );
+  Future<ReconcileResponse> getReconcileAttendance([
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   @GET('/v1/me/yearly-summary')
   Future<YearlySummaryResponse> getMyYearlySummary(
-    @Query('year') String year,
-  );
+    @Query('year') String? year, [
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   @GET('/v1/yearly-summary')
   Future<YearlySummaryResponse> getUserYearlySummary(
     @Query('user_id') String userId,
-    @Query('year') String year,
-  );
+    @Query('year') String? year, [
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   @GET('/v1/me/yearly-mismatches')
   Future<YearlyMismatchesResponse> getMyYearlyMismatches(
-    @Query('year') String year,
-  );
+    @Query('year') String? year, [
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   @GET('/v1/yearly-mismatches')
   Future<YearlyMismatchesResponse> getUserYearlyMismatches(
     @Query('user_id') String userId,
-    @Query('year') String year,
-  );
+    @Query('year') String? year, [
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 
   @POST('/v1/attendance/bulk')
   Future<BulkAttendanceResponse> createBulkAttendance(
@@ -139,7 +151,8 @@ abstract class ApiClient {
   );
 
   @GET('/v1/me/worker-advances/reconcile')
-  Future<ReconcileAdvanceResponse> getReconcileAdvances(
-    @Query('month') String month,
-  );
+  Future<ReconcileAdvanceResponse> getReconcileAdvances([
+    @Query('start_date') String? startDate,
+    @Query('end_date') String? endDate,
+  ]);
 }

@@ -15,7 +15,7 @@ class LoginState extends Equatable {
   final User? user;
   final String? error;
 
-  bool get canSubmit => phone.isNotEmpty;
+  bool get canSubmit => phone.isNotEmpty && name.isNotEmpty;
 
   LoginState copyWith({
     String? phone,

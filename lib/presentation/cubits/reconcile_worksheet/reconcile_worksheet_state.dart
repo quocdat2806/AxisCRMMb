@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:axis_crm/core/network/api_client_dto.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 
 class ReconcileWorksheetState extends Equatable {
   const ReconcileWorksheetState({
@@ -17,7 +18,7 @@ class ReconcileWorksheetState extends Equatable {
   factory ReconcileWorksheetState.initial() {
     final now = DateTime.now();
     return ReconcileWorksheetState(
-      currentMonth: DateTime(now.year, now.month),
+      currentMonth: AppDateUtils.getFirstDayOfLunarMonth(now),
     );
   }
 

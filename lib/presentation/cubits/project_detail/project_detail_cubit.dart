@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/core/network/api_client_dto.dart';
 import 'package:axis_crm/entity/project.dart';
+import 'package:axis_crm/core/di/injection_container.dart';
+import 'package:axis_crm/core/events/event_bus.dart';
 
 part 'project_detail_state.dart';
 
@@ -44,6 +46,7 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
     try {
       await _apiClient.createProjectAdvance(request);
       await loadProjectDetail();
+      getIt<EventBus>().fire(AdvanceUpdatedEvent());
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }

@@ -7,6 +7,8 @@ import 'package:axis_crm/presentation/cubits/reconcile_worksheet/reconcile_works
 import 'package:axis_crm/presentation/cubits/reconcile_worksheet/reconcile_worksheet_state.dart';
 import 'package:axis_crm/presentation/widgets/page_title.dart';
 import 'package:axis_crm/presentation/widgets/section_card.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
+import 'package:lunar/lunar.dart';
 
 class ReconcileWorksheetScreen extends StatelessWidget {
   const ReconcileWorksheetScreen({super.key});
@@ -96,7 +98,7 @@ class _ReconcileWorksheetViewState extends State<ReconcileWorksheetView> {
             icon: const Icon(Icons.chevron_left, color: Color(0xFF17233C)),
           ),
           Text(
-            'Tháng ${state.currentMonth.month}/${state.currentMonth.year}',
+            AppDateUtils.formatLunarMonthHeader(state.currentMonth),
             style: const TextStyle(
               color: Color(0xFF17233C),
               fontSize: 18,
@@ -155,12 +157,14 @@ class _ReconcileWorksheetViewState extends State<ReconcileWorksheetView> {
     final List<MapEntry<String, ReconcileAttendanceItem?>> contractorGridDays =
         _buildGridDays(currentMonth, contractorMap);
 
-    // Extract only the day numbers of mismatch dates
-    final List<int> mismatchDayNumbers =
+    // Extract only the day numbers of mismatch dates in Lunar format
+    final List<int> mismatchLunarDays =
         data.mismatchDates
             .map((dateStr) {
               try {
-                return DateTime.parse(dateStr).day;
+                final date = DateTime.parse(dateStr);
+                final lunar = Lunar.fromDate(date);
+                return lunar.getDay();
               } catch (_) {
                 return 0;
               }
@@ -169,9 +173,9 @@ class _ReconcileWorksheetViewState extends State<ReconcileWorksheetView> {
             .toList()
           ..sort();
 
-    final String mismatchDaysText = mismatchDayNumbers.isEmpty
+    final String mismatchDaysText = mismatchLunarDays.isEmpty
         ? 'Không có ngày nào bị lệch số liệu.'
-        : 'Những ngày bị lệch công: ${mismatchDayNumbers.join(', ')}';
+        : 'Những ngày bị lệch công: ${mismatchLunarDays.join(', ')}';
 
     return <Widget>[
       SectionCard(
@@ -217,10 +221,10 @@ class _ReconcileWorksheetViewState extends State<ReconcileWorksheetView> {
         child: Row(
           children: <Widget>[
             Icon(
-              mismatchDayNumbers.isEmpty
+              mismatchLunarDays.isEmpty
                   ? Icons.check_circle_outline_rounded
                   : Icons.warning_amber_rounded,
-              color: mismatchDayNumbers.isEmpty
+              color: mismatchLunarDays.isEmpty
                   ? const Color(0xFF2E7D32)
                   : const Color(0xFFE65100),
             ),
@@ -229,7 +233,7 @@ class _ReconcileWorksheetViewState extends State<ReconcileWorksheetView> {
               child: Text(
                 mismatchDaysText,
                 style: TextStyle(
-                  color: mismatchDayNumbers.isEmpty
+                  color: mismatchLunarDays.isEmpty
                       ? const Color(0xFF2E7D32)
                       : const Color(0xFFE65100),
                   fontSize: 14,
@@ -330,20 +334,25 @@ class _ReconcileWorksheetViewState extends State<ReconcileWorksheetView> {
     DateTime month,
     Map<String, ReconcileAttendanceItem> attendanceMap,
   ) {
-    final int totalDays = DateTime(month.year, month.month + 1, 0).day;
-    final int firstWeekday = DateTime(month.year, month.month).weekday;
+    final List<DateTime?> lunarGridDays = AppDateUtils.generateLunarCalendarDays(month);
 
-    final List<MapEntry<String, ReconcileAttendanceItem?>> days = [
-      for (int i = 1; i < firstWeekday; i++) const MapEntry('', null),
-    ];
+    final List<MapEntry<String, ReconcileAttendanceItem?>> days = [];
 
-    for (int d = 1; d <= totalDays; d++) {
-      final String dayStr = d.toString().padLeft(2, '0');
-      final String monthStr = month.month.toString().padLeft(2, '0');
-      final String dateKey = '${month.year}-$monthStr-$dayStr';
+    for (final DateTime? date in lunarGridDays) {
+      if (date == null) {
+        days.add(const MapEntry('', null));
+      } else {
+        final String dayStr = date.day.toString().padLeft(2, '0');
+        final String monthStr = date.month.toString().padLeft(2, '0');
+        final String dateKey = '${date.year}-$monthStr-$dayStr';
 
-      final item = attendanceMap[dateKey];
-      days.add(MapEntry(d.toString(), item));
+        final item = attendanceMap[dateKey];
+
+        final lunar = Lunar.fromDate(date);
+        final String lunarLabel = '${lunar.getDay()}';
+
+        days.add(MapEntry(lunarLabel, item));
+      }
     }
 
     return days;

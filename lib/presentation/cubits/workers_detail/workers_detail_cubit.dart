@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/core/network/api_client_dto.dart';
 import 'package:axis_crm/entity/user.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 
 part 'workers_detail_state.dart';
 
@@ -26,11 +27,23 @@ class WorkersDetailCubit extends Cubit<WorkersDetailState> {
     emit(state.copyWith(isLoading: true, error: null));
 
     try {
+      final DateTime firstDay = state.month;
+      final List<DateTime?> lunarGridDays =
+          AppDateUtils.generateLunarCalendarDays(firstDay);
+      final List<DateTime> lunarDays = lunarGridDays
+          .whereType<DateTime>()
+          .toList();
+      final DateTime lastDay = lunarDays.isEmpty ? firstDay : lunarDays.last;
+
+      final String startDateStr = _formatApiDay(firstDay);
+      final String endDateStr = _formatApiDay(lastDay);
+
       final response = await _apiClient.getAttendanceForUser(
         _userId,
-        _formatApiMonth(state.month),
         1,
         100,
+        startDateStr,
+        endDateStr,
       );
 
       final List<WorkerAttendanceDay> days = response.data.map((record) {
@@ -39,6 +52,7 @@ class WorkersDetailCubit extends Cubit<WorkersDetailState> {
           day: date.day,
           shift: record.workerShift ?? record.shift ?? 'full',
           status: record.status,
+          date: date,
         );
       }).toList();
 
@@ -52,14 +66,24 @@ class WorkersDetailCubit extends Cubit<WorkersDetailState> {
     if (page == 1) {
       emit(state.copyWith(isLoading: true, error: null));
     }
-    final String apiMonth = _formatApiMonth(state.month);
+    final DateTime firstDay = state.month;
+    final List<DateTime?> lunarGridDays =
+        AppDateUtils.generateLunarCalendarDays(firstDay);
+    final List<DateTime> lunarDays = lunarGridDays
+        .whereType<DateTime>()
+        .toList();
+    final DateTime lastDay = lunarDays.isEmpty ? firstDay : lunarDays.last;
+
+    final String startDateStr = _formatApiDay(firstDay);
+    final String endDateStr = _formatApiDay(lastDay);
 
     try {
       final response = await _apiClient.listWorkerAdvancesForUser(
         _userId,
-        apiMonth,
         page,
         20,
+        startDateStr,
+        endDateStr,
       );
 
       final bool hasMore = response.data.length >= 20;
@@ -96,24 +120,21 @@ class WorkersDetailCubit extends Cubit<WorkersDetailState> {
   }
 
   void previousMonth() {
-    emit(state.copyWith(month: _shiftMonth(state.month, -1)));
+    emit(state.copyWith(month: AppDateUtils.previousLunarMonth(state.month)));
     loadAttendance();
     loadWorkerAdvanceRecords();
   }
 
   void nextMonth() {
-    emit(state.copyWith(month: _shiftMonth(state.month, 1)));
+    emit(state.copyWith(month: AppDateUtils.nextLunarMonth(state.month)));
     loadAttendance();
     loadWorkerAdvanceRecords();
   }
 
-  DateTime _shiftMonth(DateTime source, int offset) {
-    return DateTime(source.year, source.month + offset);
-  }
-
-  String _formatApiMonth(DateTime date) {
+  String _formatApiDay(DateTime date) {
     final String month = date.month.toString().padLeft(2, '0');
-    return '${date.year}-$month';
+    final String day = date.day.toString().padLeft(2, '0');
+    return '${date.year}-$month-$day';
   }
 
   void refresh() {

@@ -1,6 +1,7 @@
 import 'package:axis_crm/core/utils/date_until.dart';
 import 'package:axis_crm/presentation/widgets/app_grid.dart';
 import 'package:flutter/material.dart';
+import 'package:lunar/lunar.dart';
 
 class AppDatePickerDialog extends StatefulWidget {
   final DateTime? initialDate;
@@ -19,33 +20,30 @@ class _AppDatePickerDialogState extends State<AppDatePickerDialog> {
   void initState() {
     super.initState();
     _selectedDate = widget.initialDate ?? DateTime.now();
-    _displayMonth = DateTime(_selectedDate.year, _selectedDate.month);
+    _displayMonth = AppDateUtils.getFirstDayOfLunarMonth(_selectedDate);
   }
 
   void _changeMonth(int delta) {
     setState(() {
-      _displayMonth = DateTime(_displayMonth.year, _displayMonth.month + delta);
+      if (delta == -1) {
+        _displayMonth = AppDateUtils.previousLunarMonth(_displayMonth);
+      } else {
+        _displayMonth = AppDateUtils.nextLunarMonth(_displayMonth);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final firstDayOfMonth = DateTime(_displayMonth.year, _displayMonth.month);
-    final lastDayOfMonth = DateTime(
-      _displayMonth.year,
-      _displayMonth.month + 1,
-      0,
-    );
-    final daysInMonth = lastDayOfMonth.day;
-    final firstWeekday = ((firstDayOfMonth.weekday - 1) % 7);
+    final List<DateTime?> lunarGridDays = AppDateUtils.generateLunarCalendarDays(_displayMonth);
 
     return Scaffold(
-      backgroundColor: Color(0x80000000),
+      backgroundColor: const Color(0x80000000),
       body: Center(
         child: Container(
           margin: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Color(0xFFFFFFFF),
+            color: const Color(0xFFFFFFFF),
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Padding(
@@ -55,9 +53,10 @@ class _AppDatePickerDialogState extends State<AppDatePickerDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppDateUtils.formatHeaderDate(_selectedDate),
-                  style: TextStyle(
-                    fontSize: 24,
+                  AppDateUtils.formatLunarHeaderDate(_selectedDate),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF17233C),
                   ),
@@ -65,16 +64,13 @@ class _AppDatePickerDialogState extends State<AppDatePickerDialog> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Tháng ${_displayMonth.month} Năm ${_displayMonth.year}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF17233C),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      AppDateUtils.formatLunarMonthHeader(_displayMonth),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF17233C),
+                      ),
                     ),
                     Row(
                       spacing: 8,
@@ -100,7 +96,7 @@ class _AppDatePickerDialogState extends State<AppDatePickerDialog> {
                 AppGrid(
                   itemHeightFactor: 0.9,
                   crossAxisCount: 7,
-                  itemCount: 7 + firstWeekday + daysInMonth,
+                  itemCount: 7 + lunarGridDays.length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
@@ -108,7 +104,7 @@ class _AppDatePickerDialogState extends State<AppDatePickerDialog> {
                       return Center(
                         child: Text(
                           AppDateUtils.weekdays[index],
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: Color(0xFF17233C),
                           ),
@@ -116,30 +112,23 @@ class _AppDatePickerDialogState extends State<AppDatePickerDialog> {
                       );
                     }
 
-                    final dayIndex = index - 7 - firstWeekday;
-                    if (dayIndex < 0 || dayIndex >= daysInMonth) {
+                    final dateIndex = index - 7;
+                    final date = lunarGridDays[dateIndex];
+                    if (date == null) {
                       return const SizedBox();
                     }
 
-                    final day = dayIndex + 1;
-                    final date = DateTime(
-                      _displayMonth.year,
-                      _displayMonth.month,
-                      day,
-                    );
                     final isSelected = AppDateUtils.isSameDate(
                       date,
                       _selectedDate,
                     );
 
+                    final lunar = Lunar.fromDate(date);
+                    final int lunarDay = lunar.getDay();
+
                     return InkWell(
                       splashColor: Colors.transparent,
                       onTap: () {
-                        final date = DateTime(
-                          _displayMonth.year,
-                          _displayMonth.month,
-                          day,
-                        );
                         setState(() {
                           _selectedDate = date;
                         });
@@ -147,20 +136,20 @@ class _AppDatePickerDialogState extends State<AppDatePickerDialog> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Color(0xFF2563EB)
+                              ? const Color(0xFF2563EB)
                               : Colors.transparent,
                           shape: BoxShape.circle,
                         ),
                         child: Center(
                           child: Text(
-                            '$day',
+                            '$lunarDay',
                             style: isSelected
-                                ? TextStyle(
+                                ? const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,
                                   )
-                                : TextStyle(
+                                : const TextStyle(
                                     fontSize: 14,
                                     color: Color(0xFF17233C),
                                   ),
@@ -176,13 +165,13 @@ class _AppDatePickerDialogState extends State<AppDatePickerDialog> {
                     Expanded(
                       child: InkWell(
                         onTap: () => Navigator.of(context).pop(),
-                        child: Text('Hủy', textAlign: TextAlign.center),
+                        child: const Text('Hủy', textAlign: TextAlign.center),
                       ),
                     ),
                     Expanded(
                       child: InkWell(
                         onTap: () => Navigator.of(context).pop(_selectedDate),
-                        child: Text('Xác nhận', textAlign: TextAlign.center),
+                        child: const Text('Xác nhận', textAlign: TextAlign.center),
                       ),
                     ),
                   ],

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:axis_crm/core/di/injection_container.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/core/network/api_client_dto.dart';
+import 'package:axis_crm/core/events/event_bus.dart';
 
 part 'time_keeping_state.dart';
 
@@ -49,6 +50,7 @@ class TimeKeepingCubit extends Cubit<TimeKeepingState> {
             timeKeepingReason: '',
           ),
         );
+        getIt<EventBus>().fire(WorksheetUpdatedEvent());
       } else {
         emit(
           state.copyWith(

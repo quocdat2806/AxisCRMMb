@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:lunar/lunar.dart';
 
 class AppDateUtils {
   AppDateUtils._();
@@ -54,6 +55,26 @@ class AppDateUtils {
     const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     final weekdayName = weekdays[(date.weekday - 1) % 7];
     return '$weekdayName, ${date.day} thg ${date.month}, ${date.year}';
+  }
+
+  static String formatLunarHeaderDate(DateTime date) {
+    const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    final lunar = Lunar.fromDate(date);
+    final solar = lunar.getSolar();
+    // lunar weekday: 0=Sunday, 1=Monday, ..., 6=Saturday
+    final weekdayName = weekdays[solar.getWeek()];
+    final monthVal = lunar.getMonth();
+    final String monthName = monthVal < 0 ? '${monthVal.abs()} (Nhuận)' : '$monthVal';
+    return '$weekdayName, ngày ${lunar.getDay()}/$monthName/${lunar.getYear()} (Âm lịch)';
+  }
+
+  static String formatLunarDate(DateTime date) {
+    final lunar = Lunar.fromDate(date);
+    final monthVal = lunar.getMonth();
+    final String monthName = monthVal < 0 ? '${monthVal.abs()} (Nhuận)' : '$monthVal';
+    final String dayStr = lunar.getDay().toString().padLeft(2, '0');
+    final String monthStr = monthName.padLeft(2, '0');
+    return '$dayStr/$monthStr/${lunar.getYear()} (Âm lịch)';
   }
 
   static const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
@@ -148,5 +169,61 @@ class AppDateUtils {
     }
 
     return days;
+  }
+
+  // --- LUNAR CALENDAR EXTENSIONS ---
+
+  static DateTime getFirstDayOfLunarMonth(DateTime date) {
+    DateTime current = DateTime(date.year, date.month, date.day);
+    while (true) {
+      final lunar = Lunar.fromDate(current);
+      if (lunar.getDay() == 1) {
+        return current;
+      }
+      current = current.subtract(const Duration(days: 1));
+    }
+  }
+
+  static List<DateTime?> generateLunarCalendarDays(DateTime firstDayOfLunarMonth) {
+    final List<DateTime> lunarMonthDays = [];
+    final targetLunar = Lunar.fromDate(firstDayOfLunarMonth);
+    final targetMonth = targetLunar.getMonth(); // Negative if leap
+    final targetYear = targetLunar.getYear();
+
+    DateTime current = firstDayOfLunarMonth;
+    while (true) {
+      final lunar = Lunar.fromDate(current);
+      if (lunar.getMonth() != targetMonth || lunar.getYear() != targetYear) {
+        break;
+      }
+      lunarMonthDays.add(current);
+      current = current.add(const Duration(days: 1));
+    }
+
+    final List<DateTime?> gridDays = [];
+    final int emptyCells = firstDayOfLunarMonth.weekday % 7;
+    for (int i = 0; i < emptyCells; i++) {
+      gridDays.add(null);
+    }
+
+    gridDays.addAll(lunarMonthDays);
+    return gridDays;
+  }
+
+  static String formatLunarMonthHeader(DateTime firstDay) {
+    final lunar = Lunar.fromDate(firstDay);
+    final monthVal = lunar.getMonth();
+    final String monthName = monthVal < 0 ? '${monthVal.abs()} (Nhuận)' : '$monthVal';
+    return 'Tháng $monthName/${lunar.getYear()} (Âm lịch)';
+  }
+
+  static DateTime nextLunarMonth(DateTime firstDay) {
+    DateTime nextMid = firstDay.add(const Duration(days: 32));
+    return getFirstDayOfLunarMonth(nextMid);
+  }
+
+  static DateTime previousLunarMonth(DateTime firstDay) {
+    DateTime prevMid = firstDay.subtract(const Duration(days: 15));
+    return getFirstDayOfLunarMonth(prevMid);
   }
 }

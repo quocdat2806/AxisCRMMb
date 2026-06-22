@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/entity/attendance_record.dart';
 import 'package:axis_crm/entity/user.dart';
+import 'package:axis_crm/core/di/injection_container.dart';
+import 'package:axis_crm/core/events/event_bus.dart';
+import 'package:axis_crm/core/utils/date_until.dart';
 
 part 'worksheet_state.dart';
 
@@ -11,17 +15,31 @@ class WorksheetCubit extends Cubit<WorksheetState> {
     : _apiClient = apiClient,
       super(WorksheetState.initial(user: user)) {
     loadWorksheet();
+    _subscribeEvents();
   }
 
   final ApiClient _apiClient;
+  StreamSubscription<WorksheetUpdatedEvent>? _eventSubscription;
+
+  void _subscribeEvents() {
+    _eventSubscription = getIt<EventBus>().on<WorksheetUpdatedEvent>().listen((event) {
+      loadWorksheet();
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _eventSubscription?.cancel();
+    return super.close();
+  }
 
   void previousMonth() {
-    emit(state.copyWith(currentMonth: _shiftMonth(state.currentMonth, -1)));
+    emit(state.copyWith(currentMonth: AppDateUtils.previousLunarMonth(state.currentMonth)));
     loadWorksheet();
   }
 
   void nextMonth() {
-    emit(state.copyWith(currentMonth: _shiftMonth(state.currentMonth, 1)));
+    emit(state.copyWith(currentMonth: AppDateUtils.nextLunarMonth(state.currentMonth)));
     loadWorksheet();
   }
 
@@ -29,9 +47,18 @@ class WorksheetCubit extends Cubit<WorksheetState> {
     emit(state.copyWith(isLoading: true, error: null));
 
     try {
+      final DateTime firstDay = state.currentMonth;
+      final List<DateTime?> lunarGridDays = AppDateUtils.generateLunarCalendarDays(firstDay);
+      final List<DateTime> lunarDays = lunarGridDays.whereType<DateTime>().toList();
+      final DateTime lastDay = lunarDays.isEmpty ? firstDay : lunarDays.last;
+
+      final String startDateStr = _formatApiDay(firstDay);
+      final String endDateStr = _formatApiDay(lastDay);
+
       final response = await _apiClient.getCurrentWorkerAttendanceRecords(
-        _formatApiMonth(state.currentMonth),
-        50,
+        100,
+        startDateStr,
+        endDateStr,
       );
 
       final List<AttendanceDay> days = response.data.map((
@@ -39,7 +66,12 @@ class WorksheetCubit extends Cubit<WorksheetState> {
       ) {
         final AttendanceType type = _typeFromShift(record);
         final String? note = record.workerNote;
-        return AttendanceDay(day: record.date.day, type: type, note: note);
+        return AttendanceDay(
+          day: record.date.day,
+          type: type,
+          note: note,
+          date: record.date,
+        );
       }).toList();
 
       int fullCount = 0;
@@ -95,12 +127,9 @@ class WorksheetCubit extends Cubit<WorksheetState> {
     }
   }
 
-  DateTime _shiftMonth(DateTime source, int offset) {
-    return DateTime(source.year, source.month + offset);
-  }
-
-  String _formatApiMonth(DateTime date) {
+  String _formatApiDay(DateTime date) {
     final String month = date.month.toString().padLeft(2, '0');
-    return '${date.year}-$month';
+    final String day = date.day.toString().padLeft(2, '0');
+    return '${date.year}-$month-$day';
   }
 }

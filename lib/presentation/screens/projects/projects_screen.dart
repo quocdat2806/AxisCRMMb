@@ -185,7 +185,7 @@ class _CreateProjectSheet extends StatelessWidget {
                   Expanded(
                     child: Text(
                       selectedDate != null
-                          ? AppDateUtils.formatDate(selectedDate!)
+                          ? AppDateUtils.formatLunarDate(selectedDate!)
                           : 'Chọn ngày (tuỳ chọn)',
                       style: TextStyle(
                         fontSize: 15,

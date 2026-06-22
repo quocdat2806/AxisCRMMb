@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:axis_crm/core/network/api_client.dart';
 import 'package:axis_crm/entity/user.dart';
+import 'package:axis_crm/core/di/injection_container.dart';
+import 'package:axis_crm/core/events/event_bus.dart';
 
 part 'workers_edit_state.dart';
 
@@ -71,6 +73,7 @@ class WorkersEditCubit extends Cubit<WorkersEditState> {
             updatedUser: updatedUser,
           ),
         );
+        getIt<EventBus>().fire(WorkerUpdatedEvent());
       } else {
         emit(
           state.copyWith(

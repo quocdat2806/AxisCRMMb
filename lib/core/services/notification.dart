@@ -33,15 +33,16 @@ class NotificationService {
     // Request runtime notification permission on Android 13+
     await _plugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.requestNotificationsPermission();
 
     _initialized = true;
   }
 
   Future<void> scheduleDailyReminder({
-    int hour = 17,
-    int minute = 02,
+    int hour = 09,
+    int minute = 45,
     int id = 0,
   }) async {
     await _plugin.cancel(id);
@@ -72,7 +73,7 @@ class NotificationService {
     await _plugin.zonedSchedule(
       id,
       'Nhắc nhở chấm công ',
-      'Đừng quên ghi lại các giao dịch hôm nay nhé!',
+      'Đừng quên chấm công hôm nay nhé!',
       scheduled,
       notificationDetails,
       androidScheduleMode: AndroidScheduleMode.alarmClock,

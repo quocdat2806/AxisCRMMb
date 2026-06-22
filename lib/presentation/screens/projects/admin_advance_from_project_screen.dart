@@ -270,7 +270,7 @@ class _AdminAdvanceFromProjectScreenState
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          AppDateUtils.formatDate(_selectedDate),
+                          AppDateUtils.formatLunarDate(_selectedDate),
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,

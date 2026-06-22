@@ -79,14 +79,17 @@ class _ApiClient implements ApiClient {
 
   @override
   Future<AttendanceRecordListResponse> getCurrentWorkerAttendanceRecords(
-    String month,
-    int pageSize,
-  ) async {
+    int pageSize, [
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'month': month,
       r'page_size': pageSize,
+      r'start_date': startDate,
+      r'end_date': endDate,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<AttendanceRecordListResponse>(
@@ -243,17 +246,20 @@ class _ApiClient implements ApiClient {
   @override
   Future<AttendanceRecordListResponse> getAttendanceForUser(
     String userId,
-    String month,
     int page,
-    int pageSize,
-  ) async {
+    int pageSize, [
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'user_id': userId,
-      r'month': month,
       r'page': page,
       r'page_size': pageSize,
+      r'start_date': startDate,
+      r'end_date': endDate,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<AttendanceRecordListResponse>(
@@ -341,21 +347,23 @@ class _ApiClient implements ApiClient {
   Future<ProjectAdvancesListResponse> listProjectAdvances(
     String? projectId,
     String? userId,
-    String? month,
     int? page,
     int? pageSize,
     String? sort,
-    String? order,
-  ) async {
+    String? order, [
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'project_id': projectId,
       r'user_id': userId,
-      r'month': month,
       r'page': page,
       r'page_size': pageSize,
       r'sort': sort,
       r'order': order,
+      r'start_date': startDate,
+      r'end_date': endDate,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -413,16 +421,19 @@ class _ApiClient implements ApiClient {
 
   @override
   Future<WorkerAdvancesListResponse> getWorkerAdvances(
-    String month,
     int page,
-    int pageSize,
-  ) async {
+    int pageSize, [
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'month': month,
       r'page': page,
       r'page_size': pageSize,
+      r'start_date': startDate,
+      r'end_date': endDate,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<WorkerAdvancesListResponse>(
@@ -449,16 +460,18 @@ class _ApiClient implements ApiClient {
   @override
   Future<WorkerAdvancesListResponse> listWorkerAdvancesForUser(
     String userId,
-    String? month,
     int page,
-    int pageSize,
-  ) async {
+    int pageSize, [
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'user_id': userId,
-      r'month': month,
       r'page': page,
       r'page_size': pageSize,
+      r'start_date': startDate,
+      r'end_date': endDate,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -516,9 +529,16 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<ReconcileResponse> getReconcileAttendance(String month) async {
+  Future<ReconcileResponse> getReconcileAttendance([
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'month': month};
+    final queryParameters = <String, dynamic>{
+      r'start_date': startDate,
+      r'end_date': endDate,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<ReconcileResponse>(
@@ -543,9 +563,18 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<YearlySummaryResponse> getMyYearlySummary(String year) async {
+  Future<YearlySummaryResponse> getMyYearlySummary(
+    String? year, [
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'year': year};
+    final queryParameters = <String, dynamic>{
+      r'year': year,
+      r'start_date': startDate,
+      r'end_date': endDate,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<YearlySummaryResponse>(
@@ -572,13 +601,18 @@ class _ApiClient implements ApiClient {
   @override
   Future<YearlySummaryResponse> getUserYearlySummary(
     String userId,
-    String year,
-  ) async {
+    String? year, [
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'user_id': userId,
       r'year': year,
+      r'start_date': startDate,
+      r'end_date': endDate,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<YearlySummaryResponse>(
@@ -603,9 +637,18 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<YearlyMismatchesResponse> getMyYearlyMismatches(String year) async {
+  Future<YearlyMismatchesResponse> getMyYearlyMismatches(
+    String? year, [
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'year': year};
+    final queryParameters = <String, dynamic>{
+      r'year': year,
+      r'start_date': startDate,
+      r'end_date': endDate,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<YearlyMismatchesResponse>(
@@ -632,13 +675,18 @@ class _ApiClient implements ApiClient {
   @override
   Future<YearlyMismatchesResponse> getUserYearlyMismatches(
     String userId,
-    String year,
-  ) async {
+    String? year, [
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'user_id': userId,
       r'year': year,
+      r'start_date': startDate,
+      r'end_date': endDate,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<YearlyMismatchesResponse>(
@@ -693,9 +741,16 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<ReconcileAdvanceResponse> getReconcileAdvances(String month) async {
+  Future<ReconcileAdvanceResponse> getReconcileAdvances([
+    String? startDate,
+    String? endDate,
+  ]) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'month': month};
+    final queryParameters = <String, dynamic>{
+      r'start_date': startDate,
+      r'end_date': endDate,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<ReconcileAdvanceResponse>(

@@ -226,7 +226,7 @@ class _AdvanceItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Ngày ứng : ${advance.date.split('T').first.replaceAll('-', '-')}',
+                    'Ngày ứng: ${AppDateUtils.formatLunarDate(DateTime.parse(advance.date))}',
                     style: const TextStyle(
                       color: Color(0xFF667085),
                       fontSize: 12,

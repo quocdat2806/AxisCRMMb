@@ -7,14 +7,16 @@ class AttendanceDay extends Equatable {
     required this.day,
     required this.type,
     this.note,
+    this.date,
   });
 
   final int day;
   final AttendanceType type;
   final String? note;
+  final DateTime? date;
 
   @override
-  List<Object?> get props => <Object?>[day, type, note];
+  List<Object?> get props => <Object?>[day, type, note, date];
 }
 
 class WorksheetState extends Equatable {
@@ -42,7 +44,7 @@ class WorksheetState extends Equatable {
     final DateTime now = DateTime.now();
     return WorksheetState(
       user: user,
-      currentMonth: DateTime(now.year, now.month),
+      currentMonth: AppDateUtils.getFirstDayOfLunarMonth(now),
       attendanceDays: const <AttendanceDay>[],
       isLoading: false,
       error: null,
